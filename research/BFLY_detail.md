@@ -197,6 +197,20 @@ Sources:
 - Revenue: "well above $200 million" in 2023, per the CEO as reported by
   [WinBuzzer](https://winbuzzer.com/2026/03/31/midjourney-revenue-above-200-million-hardware-push-xcxwbn/).
   Later estimates of $500-600M are third-party guesses. There are no audited figures.
+- **Copyright lawsuit (checked 2026-11-18, news, unverified):**
+  - Disney and Universal sued in June 2025, in the US District Court for the Central District of
+    California. Warner Bros. Discovery's separate suit was consolidated with it by November 2025.
+  - The studios seek an injunction, damages and a jury trial.
+  - In mid-2026 the case was in discovery disputes: Midjourney sought documents on the studios' own
+    AI use.
+  - No settlement or trial date had been found.
+  - **Why it matters for BFLY:** a large judgment, or an injunction that hurts subscriptions, is the
+    clearest route to Midjourney failing to pay its fixed fees. Tracked as W3 in
+    [BFLY_watch.md](BFLY_watch.md).
+  - Sources:
+    - [Graphic Policy, 2025-11-14](https://graphicpolicy.com/2025/11/14/court-suggests-disney-v-midjourney-go-to-mediation/)
+    - [Art Newspaper, 2026-07-09](https://www.theartnewspaper.com/2026/07/09/midjourney-demands-hollywood-AI-secrets)
+    - [Yahoo](https://www.yahoo.com/news/disney-universal-sue-midjourney-alleging-173439890.html)
 - What this means for BFLY:
   - Good: no investor can pull funding, so the contract is paid from Midjourney's own income. At
     about $70M over five years for the whole agreement, that looks affordable against $200M+ a year

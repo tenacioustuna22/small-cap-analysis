@@ -6,6 +6,9 @@ arithmetic; **(unverified)** marks anything from outside the filings.
 
 ## What to watch, and how it feeds Embedded
 
+The checklist a separate Claude project uses to look for news is
+[BFLY_watch.md](BFLY_watch.md).
+
 BFLY's premium rests on Embedded, the program that licenses its ultrasound chip to other
 companies. The companies signing are AI and brain-interface firms, so their money is what to watch.
 The list runs from the most direct link to the least:
@@ -176,6 +179,11 @@ Prices as of 2026-11-13. **Limits** (these change the story):
 
 - **Midjourney concentration:** a private company with no audited figures. Its payments stop only
   on breach or insolvency.
+  - Disney, Universal and Warner Bros. Discovery are suing it for copyright infringement. The case
+    is consolidated in federal court in Los Angeles and was still in discovery in mid-2026; no
+    settlement had been found as of 2026-11-18 (news, unverified).
+  - A large judgment could test its ability to pay. This is tracked in
+    [BFLY_watch.md](BFLY_watch.md), item W3.
 - **Reported Embedded revenue falls after 2026** unless new deals replace Midjourney's
   front-loaded revenue.
 - **Dilution:**
