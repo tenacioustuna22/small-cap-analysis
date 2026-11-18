@@ -26,6 +26,10 @@ The action list is in [TODO.md](../TODO.md).
    Embedded partners together earned less than $4.6M that quarter. Likely much less.
 5. **Q4 2026 guidance of about 3% growth** reflects a much harder comparison quarter, not falling
    revenue. BFLY has beaten its guidance by a wide margin all year.
+6. **The working hypothesis** (2026-11-18) is at the top of [BFLY.md](BFLY.md):
+   - Embedded's premium depends on AI and neurotech money funding new, large deals.
+   - It also depends on partners' products shipping.
+   - The full list of what to watch is in "What to watch for AI conditions" below.
 
 ## Terms used here
 
@@ -515,6 +519,9 @@ brain interfaces and for Midjourney's scanner. Piezoelectric transducers can't f
     generations will use "substantially more" modules (release, 2026-06-18).
   - **Midjourney's own goal** is over 50,000 scanners by 2031 (Medical Design & Outsourcing). This
     is an aspiration, with no FDA path yet; it starts with body composition.
+    - **Timeline:** research trials and second-generation hardware over the next 12 months. The
+      first spa, in San Francisco, opens at the end of 2027, with more cities and a third-generation
+      scanner the year after.
   - **Brain interfaces:**
     - Forest 1 aims to sense and modulate activity across the whole brain, where deep brain
       stimulation reaches one area (University of Plymouth).
@@ -569,6 +576,63 @@ brain interfaces and for Midjourney's scanner. Piezoelectric transducers can't f
 - [Wiring limit, Khuri-Yakub](https://research.ece.ncsu.edu/wp-content/uploads/sites/17/2016/10/03_Khuri-Yakub_10.pdf)
 - [CMUT vs PMUT, Yole](https://www.yolegroup.com/strategy-insights/when-pmut-and-cmut-generate-an-echo-in-medical-imaging/)
 - [Exo Imaging, Pulse 2.0](https://pulse2.com/exo-imaging-35-million/)
+
+## What to watch for AI conditions (discussed 2026-11-16)
+
+**The split:**
+- **The AI cycle sets the upside:** the multiple, and how many new Embedded deals get signed.
+- **BFLY's execution sets the floor:**
+  - Core growth
+  - delivering the Midjourney work
+  - 2027 guidance
+  - ATM use.
+
+Our bear and base cases barely depend on AI; the gap between them and the price does.
+
+**The AI conditions that matter are narrower than the headlines.** Data-center spending can boom
+while brain-interface funding dries up, or the reverse. Three layers, closest to BFLY first:
+
+**Layer 1: BFLY's own deal flow** (most direct, slowest)
+
+| Metric | Why | Free source | How often |
+|---|---|---|---|
+| New Embedded partners and terms | The direct outcome | BFLY releases, 8-K item 1.01, calls | Quarterly |
+| Embedded revenue and RPO | Whether deals turn into revenue | 10-Q (already parsed) | Quarterly |
+| Funding rounds of partners and BCI peers (Merge, Bridge, Forest; Neuralink, Synchron, Precision) | Whether the customers can pay | SEC Form D on EDGAR, plus news | As filed |
+
+Form D limits:
+- Some companies file late or not at all.
+- Amounts are sometimes left open.
+- Midjourney raises no outside money, so it won't appear.
+
+**Layer 2: money flowing to AI startups** (medium speed, read by hand)
+
+| Metric | Why | Free source | How often |
+|---|---|---|---|
+| Venture funding into AI and neurotech | The pool partners draw on | PitchBook-NVCA Venture Monitor (free summary), Crunchbase News | Quarterly, about a month's lag |
+| Large AI raises; AI IPOs getting done | Whether investors still write big cheques | News, S-1 filings on EDGAR | As they happen |
+
+**Layer 3: the AI spending cycle** (hard numbers, forward-looking)
+
+| Metric | Why | Free source | How often |
+|---|---|---|---|
+| Big tech capex, actual and guided (MSFT, GOOGL, AMZN, META, ORCL) | Best gauge of whether the build-out continues | 10-Q cash-flow XBRL, earnings releases | Quarterly; next-year guidance January-February |
+| Cloud revenue growth against capex | The "is AI paying off" question | Segment data | Quarterly |
+| Nvidia data-center revenue and guidance | Demand at the source | NVDA 10-Q | Quarterly |
+| Chip stocks against the Nasdaq, ARKK, VIX, 10-year yield | Fastest signal, noisy and partly circular | yfinance | Daily |
+
+**One gauge for BFLY:** the rolling 60-day correlation with ARKK and SMH.
+- **High:** BFLY trades as an AI stock, so layer 3 drives it.
+- **Back toward 0.2-0.3, as before the peak:** it trades on its own news.
+
+**How to use them:**
+- Watch layer 1 most closely.
+- Use layer 3 as the early warning. Big tech's 2027 capex guidance arrives around BFLY's own 2027
+  guidance (January-February). If capex is cut and BFLY guides near our base ($132M) rather than
+  the $150M consensus, both point the same way.
+
+**Not built yet** (see TODO): a script and report section for big tech capex from EDGAR, Form D
+filings for the BCI companies, and the correlation gauge.
 
 ## Embedded without Midjourney (estimate, 2026-11-16)
 

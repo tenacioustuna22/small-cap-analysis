@@ -76,6 +76,22 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
 
 ## Parked (come back to these, don't let them stall the list above)
 
+- **Embedded deal log** (from the 2026-11-18 hypothesis in `research/BFLY.md`): one row per
+  partner. Fields:
+  - date announced, partner, field
+  - how the partner is funded (latest round, investors)
+  - deal size where disclosed, and the source.
+
+  Start from the partner table in `research/BFLY_detail.md`, then BFLY's 8-Ks and press
+  releases. This is how to test whether signings follow AI and neurotech funding.
+- **AI-conditions watch script and report section** (not built). It needs no new data source:
+  - big tech capex, actual and guided, from EDGAR XBRL
+  - Form D filings for the brain-interface companies (Merge, Bridge, Forest; peers Neuralink,
+    Synchron, Precision)
+  - BFLY's rolling 60-day correlation with ARKK and SMH, from yfinance.
+
+  The design is in `research/BFLY_detail.md`, "What to watch for AI conditions".
+
 - Check the Midjourney scanner and spa details against official sources, then add the spa
   opening to `catalysts.csv`. Details to check: announced June 2026, at 300 Grant Avenue,
   San Francisco, a stated 2027 opening (the owner expects nearer 2029), and a 60-second scan
