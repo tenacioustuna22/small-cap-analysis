@@ -33,6 +33,24 @@ skipped. The current focus is BFLY and HYPR.
 
 Frame conclusions for both horizons: the multi-year thesis, and the near-term setup.
 
+## Workflow per company (owner, 2026-11-18)
+
+1. **Build the full analysis** with the owner, as was done for BFLY: reports, scenarios, research
+   notes, and a working hypothesis at the top of `research/<TICKER>.md`.
+2. **Write a watchlist,** `research/<TICKER>_watch.md`, of what could move the price. A separate
+   Claude project reads it from GitHub (the repo is public) and checks for new information
+   periodically. It reads the file cold, so the file must stand alone:
+   - a three-line thesis
+   - for each item: what to check, which part of the thesis it tests, exact URLs, how often, a
+     baseline (last known value and date), and what counts as significant
+   - a fixed report format, which says "nothing new" explicitly
+   - the number rules above.
+
+   Leave out what `scripts/report.py` already covers (8-K items, Form 4s, earnings dates, prices,
+   short interest). Focus on press releases, partner funding, news and sector data.
+3. **When the owner brings findings back,** check them, add them to the research notes, and update
+   the watchlist's baselines so the checker doesn't report the same item twice.
+
 ## Data sources (free only)
 
 - **SEC EDGAR** (`data.sec.gov` XBRL company facts and filings) is the source of truth
