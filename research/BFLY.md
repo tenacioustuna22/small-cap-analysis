@@ -1,6 +1,6 @@
 # BFLY: Butterfly Network
 
-Updated 2026-11-16. Price $5.71 (close 2026-11-16). This is the summary to look back on. The working,
+Updated 2026-11-17. Price $5.71 (close 2026-11-16). This is the summary to look back on. The working,
 derivations and every source are in [BFLY_detail.md](BFLY_detail.md), and open items in
 [TODO.md](../TODO.md). **(estimate)** marks our own arithmetic; **(unverified)** marks anything from
 outside the filings.
@@ -26,6 +26,23 @@ outside the filings.
    and brain-interface money continuing to fund new Embedded partners. Neither the path to
    profitability nor next year's expected growth explains the premium over the comparison
    companies (2026-11-16).
+
+## Working thesis (owner, 2026-11-17)
+
+- **The thesis:**
+  - The premium is almost entirely Embedded.
+  - The companies signing Embedded deals are mostly tied to AI investment (brain interfaces and AI
+    applications, not data centers).
+  - So the pace of new signings, and BFLY's value, follows AI investment. That matters more than
+    conventional metrics, and it is why the stock trades with AI sentiment.
+- **Refinements (Claude):**
+  - What matters is the size of each deal as well as the number. Just holding today's price needs
+    roughly several Midjourney-sized deals by 2031 (see "What today's price needs").
+  - The share price also feeds back into value: ATM shares sold at a lower price cost holders more.
+  - Conventional metrics still set the floor (bear and base cases) and how long BFLY can wait for
+    deals.
+- **To test it:** track the date, partner and size of each new Embedded deal, alongside venture
+  funding for brain interfaces and AI applications.
 
 ## Key numbers
 
