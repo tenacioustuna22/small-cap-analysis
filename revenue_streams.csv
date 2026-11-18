@@ -1,0 +1,4 @@
+ticker,axis,title,merge
+BFLY,us-gaap:ReportingUnitAxis,By business line,
+BFLY,srt:ProductOrServiceAxis,By product and service,us-gaap:ServiceOtherMember=bfly:SoftwareAndOtherServicesMember
+HYPR,srt:ProductOrServiceAxis,By product and service,

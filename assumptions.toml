@@ -1,0 +1,151 @@
+# Scenario assumptions, one table per ticker. A ticker without an entry gets mechanical
+# placeholders, labelled as such on its page. Every number needs a reason: put it in
+# `note` and link the evidence in `sources`.
+#
+# [TICKER]
+# horizons = [3, 5]                 # years out to value each case at
+# split = "By business line"        # a revenue_streams.csv title; leave out for the whole company
+#
+# [TICKER.base]                     # bear, base and bull are all required
+# annual_burn = 38                  # $M of cash burned a year at the start; default: last four quarters
+# breakeven_years = 3               # burn falls in a straight line to zero by then; or "never"
+# raise_discount_pct = 10           # cash shortfalls are raised by selling shares this far below today's price
+# note = "why these numbers"
+# sources = ["https://www.sec.gov/..."]
+#
+# Optional, in the [TICKER] table: caveats = ["...", "..."], the model's limits that change how
+# the figures should be read. They are shown in a box above the scenario figures.
+#
+# Whole company: put the revenue keys straight in the case table.
+#   start = ["ttm", "ytd_annualized"]   # first one available wins: ttm | ytd_annualized | run_rate | $M
+#   growth_pct = 10                     # a year, years 1-3
+#   late_growth_pct = 8                 # a year after year 3 (default: growth_pct)
+#   ev_sales = 2.5                      # exit multiple on that year's revenue; 0 = no exit value
+#
+# With a split: one table per stream, named exactly as the page names the stream.
+#   [TICKER.base.streams."Core business"]
+#   start = ["ttm", "ytd_annualized"]
+#   growth_pct = 6
+#   ev_sales = 3.0
+#
+#   [TICKER.base.streams.Embedded]
+#   revenue_by_year = [40, 30, 30, 30, 30]   # $M a year, year 1 first; replaces start and growth
+#   ev_sales = 1.0
+
+# ---------------------------------------------------------------------------------------
+# BFLY: decided with the owner 2026-11-15/16. Evidence and the reasoning for every number are
+# in research/BFLY.md ("Scenario decisions so far", "Cash, burn and dilution"). Year 1 = 2027.
+# Revisit after the 2026 10-K (late Feb 2027): Core's four-quarter start, Midjourney's
+# remaining contracted revenue, and Q4 2026 burn.
+# ---------------------------------------------------------------------------------------
+[BFLY]
+horizons = [3, 5]
+split = "By business line"
+caveats = [
+  """Nothing reacts. No case assumes cost cuts, a sale or a restructuring. In the bear a real company \
+would act long before its cash ran out, and raising about $100M when the business is worth about \
+$85M is unlikely. Read the bear as what happens if nothing changes, not as a forecast.""",
+  """New shares are sold only when cash hits exactly zero. Real companies raise with about a year of \
+cash left, often at worse prices, so the new-share counts are understated, most of all in the bear.""",
+  """The base case never breaks even: its revenue barely grows (about $132M in 2027, $136M in 2031). \
+Management's "cash flow positive in 2028" needs revenue near its own plan.""",
+  """Values are not discounted to today, count no cash earned after breakeven, and leave out 19.3M \
+potential shares from options and warrants.""",
+  """Today's price is above even the bull case. The market is pricing something these cases leave \
+out, such as management's plan or a wider platform view of Embedded. See research/BFLY.md, \
+"What the market is pricing".""",
+  """Not in any path: Midjourney stopping payment (possible only through breach or insolvency), the \
+SPAC-era class action ($14.3M accrued, $13.7M expected from insurance) if insurance falls short, \
+Midjourney's license upgrade option, and any renewal after 2030.""",
+]
+
+[BFLY.bear]
+annual_burn = 45
+breakeven_years = "never"
+raise_discount_pct = 75
+note = """Core stops growing; Embedded is only what is already contracted (Midjourney's fixed \
+contract, Forest, the 2026 deals) and fades to almost nothing by 2031. Burn starts at $45M a year \
+and never improves (rolled forward year by year it is about $126M over 3 years and $220M over 5). \
+New shares are sold 75% below today's price, because by then the price would have fallen. \
+A real company would cut costs, sell itself or restructure before reaching this point (see the \
+limits above the figures)."""
+sources = [
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000040/bfly-20260930.htm",
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000009/bfly-20251231.htm",
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000009/bfly-20251231xex1026.htm",
+]
+
+[BFLY.bear.streams."Core business"]
+start = ["ttm", "ytd_annualized"]
+growth_pct = 0
+ev_sales = 1.0
+note = "No growth; valued at the bottom of the device comparison range (LUNG 1.2x, ARAY 1.0x)."
+
+[BFLY.bear.streams.Embedded]
+revenue_by_year = [28, 14, 7, 6, 1]
+ev_sales = 0
+note = """Contracted pieces only: Midjourney 17, 6, 4, 4, 0 (front-loaded over the development \
+work); Forest 3, 2.5, 0, 0, 0; 2026 deals 8, 5, 3, 2, 1. No new deals. 0x: only contract tails \
+remain, and their cash is already counted in the burn."""
+
+[BFLY.base]
+annual_burn = 30
+breakeven_years = "never"
+raise_discount_pct = 50
+note = """Core grows 6% a year; Embedded keeps signing about one deal a year but shrinks from $41M \
+to $22M as Midjourney's contract revenue runs off. Total revenue barely grows (about $132M in 2027 \
+to $136M in 2031), so there is no path to breakeven without cost cuts, and none are assumed. \
+Management says cash flow positive in 2028; that needs revenue near its own plan. Burn starts at \
+$30M; rolled forward it is about $82M over 3 years and $138M over 5 (the model's flat line is \
+about $10M heavier). Midjourney's $10M a year of cash stops in late 2030. New shares 50% below \
+today's price, as the market would by then see flat revenue."""
+sources = [
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000040/bfly-20260930.htm",
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000038/bfly-20261029xexx991.htm",
+  "https://www.investing.com/news/transcripts/earnings-call-transcript-butterfly-network-tops-q3-2026-estimates-shares-slip-93CH-4983931",
+]
+
+[BFLY.base.streams."Core business"]
+start = ["ttm", "ytd_annualized"]
+growth_pct = 6
+ev_sales = 2.5
+note = "About its recent growth; multiple in the middle of the device range (STXS 2.5x, IRTC 3.0x)."
+
+[BFLY.base.streams.Embedded]
+revenue_by_year = [41, 30, 26, 25, 22]
+ev_sales = 1.5
+note = """Bear pieces plus milestones and hardware 6.5, 6, 5, 4, 5; about one new deal a year at \
+about $12M, reported 50/30/20 over three years; royalties 0.5 rising to 4. 2027 leans toward \
+management's "space we are in now" (about $44M). 1.5x: a shrinking stream of upfront fees that must \
+be re-won, about a third of CEVA's 4.4x."""
+
+[BFLY.bull]
+annual_burn = 20
+breakeven_years = 3
+raise_discount_pct = 10
+note = """Core grows 12% a year, then 10%; Embedded grows to $68M by 2031 with two new deals a year, \
+royalties and Midjourney's spa. Burn starts at $20M and reaches zero during 2029 (about $28M in \
+total), a year later than management's 2028 target; no raise is needed. 10% is the discount on \
+BFLY's January 2025 offering ($3.15 against a $3.51 close). Management's 2030 target of at least \
+$550M (over $500M in the March 2024 investor day) is not in this case: it needs about $410M a year \
+outside Core, with no filed evidence. Today's EV (about $1.52B) is above this case at 5 years."""
+sources = [
+  "https://www.sec.gov/Archives/edgar/data/1804176/000180417626000009/bfly-20251231xex1026.htm",
+  "https://www.businesswire.com/news/home/20240319305041/en/Butterfly-Network-Announces-Successful-Investor-Day",
+  "https://www.investing.com/news/transcripts/earnings-call-transcript-butterfly-network-tops-q3-2026-estimates-shares-slip-93CH-4983931",
+]
+
+[BFLY.bull.streams."Core business"]
+start = ["ttm", "ytd_annualized"]
+growth_pct = 12
+late_growth_pct = 10
+ev_sales = 4.0
+note = "Faster than recent growth; multiple near the top of the device range (SGHT 6.4x, PRCT 3.4x)."
+
+[BFLY.bull.streams.Embedded]
+revenue_by_year = [53, 50, 54, 61, 68]
+ev_sales = 5.0
+note = """Base pieces plus: milestones and hardware 9, 9, 8, 7, 7; two new deals a year at about \
+$15M; royalties 1 rising to 15; Midjourney spa revenue share and chips 0, 0, 3, 8, 15 \
+(placeholder: share percentage redacted, no scan price, opening assumed 2029). 5.0x: just above \
+CEVA's 4.4x, as it grows faster and royalties plus the spa reach about 44% of revenue by 2031."""

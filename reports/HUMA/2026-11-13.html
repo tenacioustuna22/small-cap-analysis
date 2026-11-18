@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUMA report, 2026-11-13</title>
+<style>
+/* Colour roles. Chart blues were checked with the dataviz palette validator in both modes. */
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb;
+  --wash: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --series: #2a78d6;
+  --series-pale: #86b6ef;
+  --link: #1c5cab;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface: #1a1a19;
+    --wash: #2c2c2a;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #44443f;
+    --series: #3987e5;
+    --series-pale: #184f95;
+    --link: #86b6ef;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font: 15px/1.55 var(--sans);
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 920px; margin: 0 auto; padding: 40px 24px 80px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--series);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Masthead: the ticker is the page's identity. */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--axis);
+}
+.wordmark {
+  margin: 0;
+  font-size: clamp(46px, 10vw, 84px);
+  line-height: 0.88;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.company { margin: 10px 0 0; font-size: 18px; color: var(--ink-2); }
+.meta { margin: 0; font: 12px/1.7 var(--mono); color: var(--ink-2); text-align: right; }
+
+.block { padding: 40px 0 8px; }
+.block + .block { border-top: 1px solid var(--grid); margin-top: 24px; }
+.eyebrow {
+  margin: 0 0 8px;
+  font: 600 12px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h2 {
+  margin: 0 0 10px;
+  max-width: 26em;
+  font-size: clamp(23px, 3.6vw, 31px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+h3 { margin: 36px 0 10px; font-size: 16px; font-weight: 650; }
+.lede { margin: 0 0 8px; max-width: 68ch; color: var(--ink-2); }
+.small { font-size: 13.5px; color: var(--ink-2); max-width: 72ch; }
+
+/* Figures with their source underneath. */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 28px;
+  margin: 24px 0 8px;
+}
+.stat { padding: 12px 0 16px; border-top: 1px solid var(--grid); }
+.stat dt { font-size: 13px; color: var(--ink-2); }
+.stat dd { margin: 2px 0 0; }
+.stat .value { display: block; font-size: 26px; line-height: 1.25; font-weight: 650; letter-spacing: -0.02em; }
+.src { display: block; margin-top: 2px; font: 11.5px/1.5 var(--mono); color: var(--ink-2); }
+
+.note {
+  margin: 16px 0;
+  padding: 10px 14px;
+  max-width: 76ch;
+  border-radius: 6px;
+  background: var(--wash);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.note strong { color: var(--ink); font-weight: 650; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 12px 0 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th {
+  padding: 8px 16px 8px 0;
+  border-bottom: 1px solid var(--axis);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-align: left;
+  vertical-align: bottom;
+}
+td { padding: 9px 16px 9px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th:last-child, td:last-child { padding-right: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.num { white-space: normal; }
+td.ticker { font-weight: 700; }
+td.date, td.form { white-space: nowrap; font-variant-numeric: tabular-nums; }
+details { margin: 4px 0 24px; }
+summary { cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+
+.quotes { list-style: none; margin: 14px 0; padding: 0; max-width: 76ch; }
+.quotes li {
+  margin-bottom: 10px;
+  padding: 2px 0 2px 16px;
+  border-left: 2px solid var(--grid);
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+footer {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--axis);
+  font: 12px/1.7 var(--mono);
+  color: var(--ink-2);
+}
+footer p { margin: 0 0 4px; }
+
+/* Charts */
+.chart { margin: 28px 0 20px; }
+.chart figcaption { margin-bottom: 14px; }
+.chart figcaption strong { display: block; font-size: 15px; font-weight: 650; }
+.chart figcaption span, .chart-foot { font-size: 13px; color: var(--ink-2); }
+.chart-foot { margin: 8px 0 0; }
+.plot { display: grid; grid-template-columns: 56px 1fr; height: 210px; }
+.yaxis, .area { position: relative; }
+.yaxis span {
+  position: absolute;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--grid); }
+.gridline.zero { background: var(--axis); }
+
+.cols { position: absolute; inset: 0; display: flex; }
+.col { position: relative; flex: 1; min-width: 0; }
+.bar {
+  position: absolute;
+  left: 50%;
+  width: min(24px, 60%);
+  transform: translateX(-50%);
+  background: var(--series);
+}
+.bar.neg { border-radius: 0 0 4px 4px; }
+.bar.pos { border-radius: 4px 4px 0 0; }
+.col:hover .bar, .col:focus-visible .bar, .fill:hover, .fill:focus-visible { filter: brightness(1.14); }
+.val {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.xaxis { display: flex; margin-left: 56px; padding-top: 8px; }
+.xaxis span { flex: 1; min-width: 0; text-align: center; font-size: 11.5px; line-height: 1.3; color: var(--muted); }
+.xaxis.dated { position: relative; display: block; height: 24px; margin: 0 14px 0 70px; }
+.xaxis.dated span { position: absolute; top: 8px; transform: translateX(-50%); }
+
+.area.line { margin: 0 14px; }
+.area.line .gridline { left: -14px; right: -14px; }
+.area.line svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.line-path {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.line-wash { fill: var(--series); opacity: 0.1; }
+.dot { position: absolute; width: 24px; height: 24px; transform: translate(-50%, -50%); border-radius: 50%; }
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: var(--series);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.dot:hover::after, .dot:focus-visible::after { inset: 6px; }
+.pt-label { position: absolute; transform: translateY(-100%); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pt-label.first { left: -6px; }
+.pt-label.last { right: -6px; }
+
+/* Runway strip */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-bottom: 6px; font-size: 12.5px; color: var(--ink-2); }
+.sw { display: inline-block; width: 14px; height: 8px; margin-right: 7px; border-radius: 2px; }
+.sw.solid, .fill.solid { background: var(--series); }
+.sw.pale, .fill.pale { background: var(--series-pale); }
+.strip-body { position: relative; padding-top: 24px; --name-w: 0px; }
+.strip-body.named { --name-w: 68px; }
+.strip-grid { position: absolute; top: 0; bottom: 22px; left: var(--name-w); right: 0; }
+.strip-grid i { position: absolute; top: 24px; bottom: 0; width: 1px; background: var(--grid); }
+.strip-grid i.today { top: 0; background: var(--axis); }
+.strip-grid i.today span {
+  position: absolute;
+  top: -2px;
+  left: 6px;
+  font-size: 11.5px;
+  font-style: normal;
+  color: var(--ink-2);
+}
+.strip-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--name-w) 1fr;
+  align-items: end;
+  padding: 10px 0;
+}
+.strip-name { font-size: 15px; font-weight: 700; line-height: 14px; }
+.strip-text { margin: 0 0 6px; font-size: 14px; }
+.strip-text span { padding-right: 8px; background: var(--surface); }
+.track { position: relative; height: 12px; }
+.fill { position: absolute; top: 0; bottom: 0; }
+.fill.end { border-radius: 0 4px 4px 0; }
+.strip-axis { position: relative; height: 22px; margin-left: var(--name-w); border-top: 1px solid var(--axis); }
+.strip-axis span { position: absolute; top: 5px; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); }
+
+/* Hover readout: value first, then what it is, then where it came from. */
+.tip {
+  position: fixed;
+  z-index: 10;
+  max-width: 260px;
+  padding: 8px 11px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 12.5px;
+  line-height: 1.4;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.tip[hidden] { display: none; }
+.tip-value { font-size: 15px; font-weight: 650; }
+.tip-detail { margin-top: 2px; font: 11px/1.4 var(--mono); opacity: 0.75; }
+
+@media (max-width: 560px) {
+  main { padding: 28px 16px 64px; }
+  .meta { text-align: left; }
+  .plot { grid-template-columns: 46px 1fr; }
+  .xaxis { margin-left: 46px; }
+  .xaxis.dated { margin-left: 60px; }
+  .strip-body.named { --name-w: 54px; }
+}
+@media print {
+  .tip { display: none; }
+  details > *:not(summary) { display: block; }
+}
+</style>
+</head>
+<body>
+<main>
+<header class="masthead"><div><h1 class="wordmark">HUMA</h1><p class="company">Humacyte</p></div><p class="meta">SEC filings as of 2026-11-13<br><a href="../index.html">Watchlist summary</a></p></header>
+<section class="block"><p class="eyebrow">Cash runway</p><h2>Cash lasts 9 to 13 months, running out between Jun 2027 and Oct 2027.</h2><p class="lede">Starting from $64.5M on 2026-09-30: 13 months at last quarter&#x27;s burn of $15.0M, and 9 months at the four-quarter average of $22.1M a quarter.</p><figure class="chart strip"><div class="legend"><span><i class="sw solid"></i>Cash lasts at both recent burn rates</span><span><i class="sw pale"></i>Only at the lower burn rate</span></div><div class="strip-body"><div class="strip-grid"><i style="left:8.49%"></i><i style="left:41.79%"></i><i style="left:75.18%"></i><i class="today" style="left:4.01%"><span>today</span></i></div><div class="strip-row"><div class="strip-name"></div><div class="strip-main"><div class="track"><span class="fill solid" style="left:0.00%;width:24.27%" tabindex="0" data-tip="Cash lasts at both burn rates|to Jun 2027|"></span><span class="fill pale end" style="left:calc(24.27% + 2px);width:calc(11.59% - 2px)" tabindex="0" data-tip="Only at the lower burn rate|to Oct 2027|"></span></div></div></div><div class="strip-axis"><span style="left:8.49%">2027</span><span style="left:41.79%">2028</span><span style="left:75.18%">2029</span></div></div><p class="chart-foot">Timeline starts at the balance sheet date, 2026-09-30, and shows 3 years.</p></figure><dl class="stats"><div class="stat"><dt>Cash and short-term investments</dt><dd><span class="value">$64.5M</span><span class="src">10-Q, as of 2026-09-30, filed 2026-11-10</span></dd></div><div class="stat"><dt>Operating cash burn, last quarter</dt><dd><span class="value">$15.0M</span><span class="src">10-Q, quarter ended 2026-09-30, filed 2026-11-10</span></dd></div><div class="stat"><dt>Operating cash burn, four-quarter average</dt><dd><span class="value">$22.1M</span><span class="src">average of the four quarters charted below</span></dd></div></dl><p class="small">Runway is cash and short-term investments divided by operating cash burn. Capital spending, debt repayments and long-term investments are not included.</p><figure class="chart"><figcaption><strong>Operating cash flow by quarter</strong><span>In $ millions. Below the line means cash was used. Check for one-off quarters before trusting the average.</span></figcaption><div class="plot"><div class="yaxis"><span style="top:100.00%">-$40M</span><span style="top:75.00%">-$30M</span><span style="top:50.00%">-$20M</span><span style="top:25.00%">-$10M</span><span style="top:0.00%">$0M</span></div><div class="area"><i class="gridline" style="top:100.00%"></i><i class="gridline" style="top:75.00%"></i><i class="gridline" style="top:50.00%"></i><i class="gridline" style="top:25.00%"></i><i class="gridline zero" style="top:0.00%"></i><div class="cols"><div class="col" tabindex="0" data-tip="Quarter ended 2024-12-31|-$26.6M|10-K filed 2026-03-27"><b class="bar neg" style="top:0.00%;height:66.44%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2025-03-31|-$28.6M|10-Q filed 2026-05-13"><b class="bar neg" style="top:0.00%;height:71.50%"></b><span class="val" style="top:calc(71.50% + 4px)">-$28.6M</span></div><div class="col" tabindex="0" data-tip="Quarter ended 2025-06-30|-$26.4M|10-Q filed 2026-08-12"><b class="bar neg" style="top:0.00%;height:66.03%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2025-09-30|-$23.9M|10-Q filed 2026-11-10"><b class="bar neg" style="top:0.00%;height:59.76%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2025-12-31|-$26.1M|10-K filed 2026-03-27"><b class="bar neg" style="top:0.00%;height:65.31%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2026-03-31|-$25.1M|10-Q filed 2026-05-13"><b class="bar neg" style="top:0.00%;height:62.76%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2026-06-30|-$22.1M|10-Q filed 2026-08-12"><b class="bar neg" style="top:0.00%;height:55.15%"></b></div><div class="col" tabindex="0" data-tip="Quarter ended 2026-09-30|-$15.0M|10-Q filed 2026-11-10"><b class="bar neg" style="top:0.00%;height:37.44%"></b><span class="val" style="top:calc(37.44% + 4px)">-$15.0M</span></div></div></div></div><div class="xaxis"><span>Dec<br>2024</span><span>Mar<br>2025</span><span>Jun<br>2025</span><span>Sep<br>2025</span><span>Dec<br>2025</span><span>Mar<br>2026</span><span>Jun<br>2026</span><span>Sep<br>2026</span></div></figure><details><summary>Show as a table, with the filing each figure came from</summary><div class="table-wrap"><table><thead><tr><th class="date">Quarter ended</th><th class="num">Operating cash flow</th><th class="">Reported in</th></tr></thead><tbody><tr><td class="date">2026-09-30</td><td class="num">-$15.0M</td><td class="">10-Q filed 2026-11-10</td></tr><tr><td class="date">2026-06-30</td><td class="num">-$22.1M</td><td class="">10-Q filed 2026-08-12</td></tr><tr><td class="date">2026-03-31</td><td class="num">-$25.1M</td><td class="">10-Q filed 2026-05-13</td></tr><tr><td class="date">2025-12-31</td><td class="num">-$26.1M</td><td class="">10-K filed 2026-03-27</td></tr><tr><td class="date">2025-09-30</td><td class="num">-$23.9M</td><td class="">10-Q filed 2026-11-10</td></tr><tr><td class="date">2025-06-30</td><td class="num">-$26.4M</td><td class="">10-Q filed 2026-08-12</td></tr><tr><td class="date">2025-03-31</td><td class="num">-$28.6M</td><td class="">10-Q filed 2026-05-13</td></tr><tr><td class="date">2024-12-31</td><td class="num">-$26.6M</td><td class="">10-K filed 2026-03-27</td></tr></tbody></table></div></details></section>
+<section class="block"><p class="eyebrow">Dilution</p><h2>Share count is up 75% over one year and up 169% over three.</h2><dl class="stats"><div class="stat"><dt>Shares outstanding</dt><dd><span class="value">277.8M</span><span class="src">cover page: 10-Q, as of 2026-11-10, filed 2026-11-10</span></dd></div><div class="stat"><dt>Change over one year</dt><dd><span class="value">+75%</span><span class="src">against 158.3M in the quarter ended 2025-09-30</span></dd></div><div class="stat"><dt>Change over three years</dt><dd><span class="value">+169%</span><span class="src">against 103.4M in the quarter ended 2023-09-30</span></dd></div><div class="stat"><dt>Potential new shares (warrants and options only)</dt><dd><span class="value">54.0M</span><span class="src">equal to 19% of shares outstanding, as of 2026-09-30</span></dd></div><div class="stat"><dt>Net financing cash, last four quarters</dt><dd><span class="value">$133.6M</span><span class="src">equity and debt combined</span></dd></div></dl><p class="small">Potential new shares are what options, warrants, RSUs, convertibles and earnouts could add, including ones far out of the money.</p><p class="note"><strong>Data note.</strong> potential shares counts warrants and options only; RSUs, convertibles and earnout shares are not included</p><figure class="chart"><figcaption><strong>Weighted average shares by quarter</strong><span>In millions. Fourth quarters are missing because annual reports give only the full-year average.</span></figcaption><div class="plot"><div class="yaxis"><span style="top:100.00%">0M</span><span style="top:75.00%">100M</span><span style="top:50.00%">200M</span><span style="top:25.00%">300M</span><span style="top:0.00%">400M</span></div><div class="area line"><i class="gridline zero" style="top:100.00%"></i><i class="gridline" style="top:75.00%"></i><i class="gridline" style="top:50.00%"></i><i class="gridline" style="top:25.00%"></i><i class="gridline" style="top:0.00%"></i><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon class="line-wash" points="0.00,74.14 16.70,72.94 25.00,70.21 33.39,70.15 50.00,67.13 58.30,61.14 66.70,60.42 83.30,50.54 91.61,41.45 100.00,30.55 100.00,100 0.00,100"/><polyline class="line-path" points="0.00,74.14 16.70,72.94 25.00,70.21 33.39,70.15 50.00,67.13 58.30,61.14 66.70,60.42 83.30,50.54 91.61,41.45 100.00,30.55"/></svg><span class="dot" style="left:0.00%;top:74.14%" tabindex="0" data-tip="Quarter ended 2023-09-30|103.4M|10-Q filed 2024-11-08"></span><span class="dot" style="left:16.70%;top:72.94%" tabindex="0" data-tip="Quarter ended 2024-03-31|108.2M|10-Q filed 2025-05-13"></span><span class="dot" style="left:25.00%;top:70.21%" tabindex="0" data-tip="Quarter ended 2024-06-30|119.2M|10-Q filed 2025-08-11"></span><span class="dot" style="left:33.39%;top:70.15%" tabindex="0" data-tip="Quarter ended 2024-09-30|119.4M|10-Q filed 2025-11-12"></span><span class="dot" style="left:50.00%;top:67.13%" tabindex="0" data-tip="Quarter ended 2025-03-31|131.5M|10-Q filed 2026-05-13"></span><span class="dot" style="left:58.30%;top:61.14%" tabindex="0" data-tip="Quarter ended 2025-06-30|155.4M|10-Q filed 2026-08-12"></span><span class="dot" style="left:66.70%;top:60.42%" tabindex="0" data-tip="Quarter ended 2025-09-30|158.3M|10-Q filed 2026-11-10"></span><span class="dot" style="left:83.30%;top:50.54%" tabindex="0" data-tip="Quarter ended 2026-03-31|197.8M|10-Q filed 2026-05-13"></span><span class="dot" style="left:91.61%;top:41.45%" tabindex="0" data-tip="Quarter ended 2026-06-30|234.2M|10-Q filed 2026-08-12"></span><span class="dot" style="left:100.00%;top:30.55%" tabindex="0" data-tip="Quarter ended 2026-09-30|277.8M|10-Q filed 2026-11-10"></span><span class="pt-label last" style="top:calc(30.55% - 10px)">277.8M</span><span class="pt-label first" style="top:calc(74.14% - 10px)">103.4M</span></div></div><div class="xaxis dated"><span style="left:8.49%">2024</span><span style="left:41.88%">2025</span><span style="left:75.18%">2026</span></div></figure><details><summary>Show as a table, with the filing each figure came from</summary><div class="table-wrap"><table><thead><tr><th class="date">Quarter ended</th><th class="num">Weighted average shares</th><th class="">Reported in</th></tr></thead><tbody><tr><td class="date">2026-09-30</td><td class="num">277.8M</td><td class="">10-Q filed 2026-11-10</td></tr><tr><td class="date">2026-06-30</td><td class="num">234.2M</td><td class="">10-Q filed 2026-08-12</td></tr><tr><td class="date">2026-03-31</td><td class="num">197.8M</td><td class="">10-Q filed 2026-05-13</td></tr><tr><td class="date">2025-09-30</td><td class="num">158.3M</td><td class="">10-Q filed 2026-11-10</td></tr><tr><td class="date">2025-06-30</td><td class="num">155.4M</td><td class="">10-Q filed 2026-08-12</td></tr><tr><td class="date">2025-03-31</td><td class="num">131.5M</td><td class="">10-Q filed 2026-05-13</td></tr><tr><td class="date">2024-09-30</td><td class="num">119.4M</td><td class="">10-Q filed 2025-11-12</td></tr><tr><td class="date">2024-06-30</td><td class="num">119.2M</td><td class="">10-Q filed 2025-08-11</td></tr><tr><td class="date">2024-03-31</td><td class="num">108.2M</td><td class="">10-Q filed 2025-05-13</td></tr><tr><td class="date">2023-09-30</td><td class="num">103.4M</td><td class="">10-Q filed 2024-11-08</td></tr></tbody></table></div></details><h3>Registration and offering filings since 2024-11-12</h3><div class="table-wrap"><table><thead><tr><th class="date">Filed</th><th class="form">Form</th><th class="">What it is</th><th class="num">Registered</th><th class="">Document</th></tr></thead><tbody><tr><td class="date">2026-06-11</td><td class="form">424B5</td><td class="">prospectus supplement: offering or at-the-market program</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465926072961/tm2616944-3_424b5.htm">Open on sec.gov</a></td></tr><tr><td class="date">2026-06-10</td><td class="form">424B5</td><td class="">prospectus supplement: offering or at-the-market program</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465926072391/tm2616944-1_424b5.htm">Open on sec.gov</a></td></tr><tr><td class="date">2026-03-19</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465926032107/tm269105-1_424b3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-12-16</td><td class="form">424B5</td><td class="">prospectus supplement: offering or at-the-market program</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925121672/tm2533475-1_424b5.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-12-15</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925120905/tm2533185-1_424b3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-10-07</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925097348/tm2528057-1_424b3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-09-22</td><td class="form">EFFECT</td><td class="">registration declared effective</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/999999999525003058/xslEFFECTX01/primary_doc.xml">Open on sec.gov</a></td></tr><tr><td class="date">2025-09-22</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925092187/tm2525852-3_424b3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-09-12</td><td class="form">S-3</td><td class="">shelf registration</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925089607/tm2525852-1_s3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-03-26</td><td class="form">424B5</td><td class="">prospectus supplement: offering or at-the-market program</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925028270/tm258849-3_424b5.htm">Open on sec.gov</a></td></tr><tr><td class="date">2025-03-25</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465925027792/tm258849-1_424b3.htm">Open on sec.gov</a></td></tr><tr><td class="date">2024-11-14</td><td class="form">424B3</td><td class="">prospectus, often resale by existing holders</td><td class="num"></td><td class=""><a href="https://www.sec.gov/Archives/edgar/data/1818382/000110465924118350/tm2428366-1_424b3.htm">Open on sec.gov</a></td></tr></tbody></table></div><h3>What the latest report says about selling programs</h3><p class="small">Sentences about shelf registrations, at-the-market programs and equity lines, quoted from the <a href="https://www.sec.gov/Archives/edgar/data/1818382/000119312526455588/huma-20260930.htm">10-Q filed 2026-11-10</a>. This is raw text, so a stray page header can appear mid-sentence.</p><ul class="quotes"><li>Common Stock Purchase Agreement In connection with the common stock purchase agreement, dated as of September 24, 2024, between Lincoln Park Capital Fund LLC (&quot;Lincoln Park&quot;) and the Company (the &quot;Common Stock Purchase Agreement&quot;), the Company recorded a derivative asset with an initial fair value based on the 115,705 shares of Common Stock issued to Lincoln Park as consideration for its irrevocable commitment to purchase up to $50.0 million in shares of Common Stock.</li><li>Equity Line Financing On September 24, 2024, the Company entered into the Common Stock Purchase Agreement with Lincoln Park for an equity line financing, which provided that, subject to the terms and conditions set forth therein, the Company had the sole right, but not the obligation, to sell to Lincoln Park shares of Common Stock having an aggregate value of up to $50.0 million over a 24 -month period.</li><li>Through September 30, 2026, the Company sold 500,000 shares to Lincoln Park under the Common Stock Purchase Agreement for aggregate gross proceeds of approximately $2.5 million, all of which were sold during the year ended December 31, 2025.</li><li>As of September 30, 2026, $47.5 million of unused purchase capacity remained under the Common Stock Purchase Agreement.</li><li>The Common Stock Purchase Agreement expired in accordance with its terms on October 1, 2026, and the remaining $47.5 million of purchase capacity expired unused.</li><li>ATM Facilities On September 1, 2022, the Company entered into a sales agreement with Jefferies LLC, acting as sales agent (the &quot;Jefferies ATM Sales Agreement&quot;) for the sale from time to time of up to $80.0 million of shares of Common Stock (the &quot;Jefferies ATM Facility&quot;).</li><li>During the three months ended September 30, 2025, the Company sold an aggregate of 2,492,410 shares of Common Stock under the Jefferies ATM Facility at an average price of $2.64 per share for net proceeds of approximately $6.2 million.</li><li>During the nine months ended September 30, 2025, the Company sold an aggregate of 3,792,280 shares of Common Stock under the Jefferies ATM Facility at an average price of $2.72 per share for net proceeds of approximately $9.8 million.</li><li>On December 16, 2025, the Company entered into a sales agreement with TD Securities (USA) LLC (&quot;TD Cowen&quot;), acting as sales agent, or the TD Cowen ATM Facility, pursuant to which the Company may sell shares of Common Stock from time to time up to an aggregate offering price of $60.0 million.</li><li>During the nine months ended September 30, 2026, the Company sold an aggregate of 4,018,497 shares of Common Stock under the TD Cowen ATM Facility at an average price of $1.16 per share for net proceeds of approximately $4.6 million.</li><li>On March 19, 2026, the Company delivered written notice to TD Cowen that it was suspending and terminating the prospectus, dated December 16, 2025 (the &quot;ATM Prospectus&quot;), relating to the sale of up to $60.0 million of Common Stock, that may be issued and sold pursuant to the Sales Agreement, dated as of December 16, 2025, by and between the Company and TD Cowen (the &quot;Sales Agreement&quot;).</li><li>The net gain on derivative instruments for the nine months ended September 30, 2026 included a $0.7 million non-cash loss resulting from the remeasurement of the Common Stock Purchase Agreement derivative asset to a fair value of zero.</li><li>Cash Flow from Financing Activities Net cash provided by financing activities for the nine months ended September 30, 2026 consisted primarily of $18.3 million of net proceeds from our March 2026 Registered Direct Offering, $53.8 million of net proceeds from our 2026 Public Offering and $4.6 million of net proceeds from the issuance of stock under our TD Cowen ATM Facility.</li><li>Net cash provided by financing activities for the nine months ended September 30, 2025 consisted primarily of $46.7 million of net proceeds from our 2025 Public Offering and $9.8 million of net proceeds from the issuance of stock under our Jefferies ATM Facility, partially offset by a $50.0 million payment on the revenue interest liability in connection with the Purchase Agreement Amendment.</li></ul></section>
+<footer><p>Generated 2026-11-13 from SEC EDGAR data. Analysis of public filings, not financial advice.</p></footer>
+</main>
+<div id="tip" class="tip" role="status" hidden></div>
+<script>
+// One shared readout for every chart mark. Hover and keyboard focus show the same thing.
+(() => {
+  const tip = document.getElementById("tip");
+  if (!tip) return;
+
+  const show = (el) => {
+    const [head, value, detail] = el.dataset.tip.split("|");
+    tip.replaceChildren();
+    for (const [cls, text] of [["tip-value", value], ["tip-head", head], ["tip-detail", detail]]) {
+      if (!text) continue;
+      const line = document.createElement("div");
+      line.className = cls;
+      line.textContent = text;
+      tip.append(line);
+    }
+    tip.hidden = false;
+    const mark = (el.querySelector(".bar") || el).getBoundingClientRect();
+    const box = tip.getBoundingClientRect();
+    const x = Math.max(8, Math.min(mark.left + mark.width / 2 - box.width / 2, innerWidth - box.width - 8));
+    let y = mark.top - box.height - 8;
+    if (y < 8) y = mark.bottom + 8;
+    tip.style.left = `${x}px`;
+    tip.style.top = `${y}px`;
+  };
+  const hide = () => { tip.hidden = true; };
+
+  for (const el of document.querySelectorAll("[data-tip]")) {
+    el.addEventListener("pointerenter", () => show(el));
+    el.addEventListener("pointerleave", hide);
+    el.addEventListener("focus", () => show(el));
+    el.addEventListener("blur", hide);
+  }
+  addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+</body>
+</html>

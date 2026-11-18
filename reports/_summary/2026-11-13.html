@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watchlist summary, 2026-11-13</title>
+<style>
+/* Colour roles. Chart blues were checked with the dataviz palette validator in both modes. */
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb;
+  --wash: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --series: #2a78d6;
+  --series-pale: #86b6ef;
+  /* Categorical slots for stacked series, in fixed order (validated together, both modes). */
+  --cat-1: #2a78d6;
+  --cat-2: #eb6834;
+  --cat-3: #1baf7a;
+  --link: #1c5cab;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface: #1a1a19;
+    --wash: #2c2c2a;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #44443f;
+    --series: #3987e5;
+    --series-pale: #184f95;
+    --cat-1: #3987e5;
+    --cat-2: #d95926;
+    --cat-3: #199e70;
+    --link: #86b6ef;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font: 15px/1.55 var(--sans);
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 920px; margin: 0 auto; padding: 40px 24px 80px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--series);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Masthead: the ticker is the page's identity. */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--axis);
+}
+.wordmark {
+  margin: 0;
+  font-size: clamp(46px, 10vw, 84px);
+  line-height: 0.88;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.company { margin: 10px 0 0; font-size: 18px; color: var(--ink-2); }
+.meta { margin: 0; font: 12px/1.7 var(--mono); color: var(--ink-2); text-align: right; }
+
+/* Section links: sticky so any section is one click away on a long page. */
+.toc {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  margin: 0 -24px;
+  padding: 10px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--grid);
+  font-size: 13.5px;
+}
+.toc a { color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--ink); text-decoration: underline; }
+.block { padding: 40px 0 8px; scroll-margin-top: 48px; }
+.block + .block { border-top: 1px solid var(--grid); margin-top: 24px; }
+.eyebrow {
+  margin: 0 0 8px;
+  font: 600 12px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h2 {
+  margin: 0 0 10px;
+  max-width: 26em;
+  font-size: clamp(23px, 3.6vw, 31px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+h3 { margin: 36px 0 10px; font-size: 16px; font-weight: 650; }
+.lede { margin: 0 0 8px; max-width: 68ch; color: var(--ink-2); }
+.small { font-size: 13.5px; color: var(--ink-2); max-width: 72ch; }
+
+/* Figures with their source underneath. */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 28px;
+  margin: 24px 0 8px;
+}
+.stat { padding: 12px 0 16px; border-top: 1px solid var(--grid); }
+.stat dt { font-size: 13px; color: var(--ink-2); }
+.stat dd { margin: 2px 0 0; }
+.stat .value { display: block; font-size: 26px; line-height: 1.25; font-weight: 650; letter-spacing: -0.02em; }
+.src { display: block; margin-top: 2px; font: 11.5px/1.5 var(--mono); color: var(--ink-2); }
+
+.tag { margin-left: 6px; font: 11.5px/1.5 var(--mono); color: var(--ink-2); white-space: nowrap; }
+
+.note {
+  margin: 16px 0;
+  padding: 10px 14px;
+  max-width: 76ch;
+  border-radius: 6px;
+  background: var(--wash);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.note strong { color: var(--ink); font-weight: 650; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 12px 0 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th {
+  padding: 8px 16px 8px 0;
+  border-bottom: 1px solid var(--axis);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-align: left;
+  vertical-align: bottom;
+}
+td { padding: 9px 16px 9px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th:last-child, td:last-child { padding-right: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.num { white-space: normal; }
+td.ticker { font-weight: 700; }
+td.date, td.form { white-space: nowrap; font-variant-numeric: tabular-nums; }
+details { margin: 4px 0 24px; }
+summary { cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+
+.quotes { list-style: none; margin: 14px 0; padding: 0; max-width: 76ch; }
+.quotes li {
+  margin-bottom: 10px;
+  padding: 2px 0 2px 16px;
+  border-left: 2px solid var(--grid);
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+footer {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--axis);
+  font: 12px/1.7 var(--mono);
+  color: var(--ink-2);
+}
+footer p { margin: 0 0 4px; }
+
+/* Charts */
+.chart { margin: 28px 0 20px; }
+.chart figcaption { margin-bottom: 14px; }
+.chart figcaption strong { display: block; font-size: 15px; font-weight: 650; }
+.chart figcaption span, .chart-foot { font-size: 13px; color: var(--ink-2); }
+.chart-foot { margin: 8px 0 0; }
+.plot { display: grid; grid-template-columns: 56px 1fr; height: 210px; }
+.yaxis, .area { position: relative; }
+.yaxis span {
+  position: absolute;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--grid); }
+.gridline.zero { background: var(--axis); }
+
+.cols { position: absolute; inset: 0; display: flex; }
+.col { position: relative; flex: 1; min-width: 0; }
+.bar {
+  position: absolute;
+  left: 50%;
+  width: min(24px, 60%);
+  transform: translateX(-50%);
+  background: var(--series);
+}
+.bar.neg { border-radius: 0 0 4px 4px; }
+.bar.pos { border-radius: 4px 4px 0 0; }
+/* Value range: one track per case, marks on a shared horizontal axis. */
+.chart.range .track { display: flex; align-items: center; height: 40px; }
+.track-label { width: 56px; flex: none; font-size: 12.5px; color: var(--ink-2); }
+.track-line { position: relative; flex: 1; height: 100%; margin-right: 14px; border-bottom: 1px solid var(--grid); }
+.vgrid { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+.range-ref { position: absolute; top: 4px; bottom: 4px; width: 0; border-left: 2px dashed var(--ink-2); transform: translateX(-1px); }
+.mark { position: absolute; top: 50%; width: 24px; height: 24px; transform: translate(-50%, -50%); border-radius: 50%; }
+.mark::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px;
+  transform: translate(-50%, -50%); border-radius: 50%; box-sizing: border-box;
+}
+.mark.disc::after { background: var(--series); box-shadow: 0 0 0 2px var(--surface); }
+.mark.ring::after { background: var(--surface); border: 2.5px solid var(--series); }
+.mark:hover::after, .mark:focus-visible::after { width: 15px; height: 15px; }
+.range-axis { position: relative; height: 24px; margin: 0 14px 0 56px; }
+.range-axis span { position: absolute; top: 6px; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); }
+.sw.mark-key { width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; }
+.sw.mark-key.disc { background: var(--series); }
+.sw.mark-key.ring { border: 2.5px solid var(--series); background: transparent; }
+
+/* Stacked columns: categorical colours by series, a 2px surface gap between segments. */
+.bar.seg { border-radius: 0; }
+.bar.seg.topmost { border-radius: 4px 4px 0 0; }
+.bar.seg:not(.lowest) { border-bottom: 2px solid var(--surface); }
+.c1 { background: var(--cat-1); }
+.c2 { background: var(--cat-2); }
+.c3 { background: var(--cat-3); }
+.col:hover .bar, .col:focus-visible .bar, .fill:hover, .fill:focus-visible { filter: brightness(1.14); }
+.val {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.xaxis { display: flex; margin-left: 56px; padding-top: 8px; }
+.xaxis span { flex: 1; min-width: 0; text-align: center; font-size: 11.5px; line-height: 1.3; color: var(--muted); }
+.xaxis.dated { position: relative; display: block; height: 24px; margin: 0 14px 0 70px; }
+.xaxis.dated span { position: absolute; top: 8px; transform: translateX(-50%); }
+
+.area.line { margin: 0 14px; }
+.area.line .gridline { left: -14px; right: -14px; }
+.area.line svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.line-path {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.line-wash { fill: var(--series); opacity: 0.1; }
+/* Reference lines are neutral so the series keeps the only colour; pattern tells them apart. */
+.line-ref {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.line-ref.dashed { stroke-dasharray: 5 4; }
+.line-ref.solid { stroke: var(--muted); }
+.sw.line { height: 3px; border-radius: 2px; background: var(--series); }
+.sw.ref { height: 0; border-radius: 0; }
+.sw.ref.dashed { border-top: 2px dashed var(--ink-2); }
+.sw.ref.solid { border-top: 2px solid var(--muted); }
+/* Dense lines: each point owns a vertical strip; hovering it shows a marker. */
+.slice { position: absolute; top: 0; bottom: 0; }
+.slice i { position: absolute; display: none; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+  border-radius: 50%; background: var(--series); box-shadow: 0 0 0 2px var(--surface); }
+.slice:hover i { display: block; }
+.slice:hover::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--axis); }
+.dot { position: absolute; width: 24px; height: 24px; transform: translate(-50%, -50%); border-radius: 50%; }
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: var(--series);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.dot:hover::after, .dot:focus-visible::after { inset: 6px; }
+.pt-label { position: absolute; transform: translateY(-100%); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pt-label.first { left: -6px; }
+.pt-label.last { right: -6px; }
+
+/* Runway strip */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-bottom: 6px; font-size: 12.5px; color: var(--ink-2); }
+.sw { display: inline-block; width: 14px; height: 8px; margin-right: 7px; border-radius: 2px; }
+.sw.solid, .fill.solid { background: var(--series); }
+.sw.pale, .fill.pale { background: var(--series-pale); }
+.strip-body { position: relative; padding-top: 24px; --name-w: 0px; }
+.strip-body.named { --name-w: 68px; }
+.strip-grid { position: absolute; top: 0; bottom: 22px; left: var(--name-w); right: 0; }
+.strip-grid i { position: absolute; top: 24px; bottom: 0; width: 1px; background: var(--grid); }
+.strip-grid i.today { top: 0; background: var(--axis); }
+.strip-grid i.today span {
+  position: absolute;
+  top: -2px;
+  left: 6px;
+  font-size: 11.5px;
+  font-style: normal;
+  color: var(--ink-2);
+}
+.strip-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--name-w) 1fr;
+  align-items: end;
+  padding: 10px 0;
+}
+.strip-name { font-size: 15px; font-weight: 700; line-height: 14px; }
+.strip-text { margin: 0 0 6px; font-size: 14px; }
+.strip-text span { padding-right: 8px; background: var(--surface); }
+.track { position: relative; height: 12px; }
+.fill { position: absolute; top: 0; bottom: 0; }
+.fill.end { border-radius: 0 4px 4px 0; }
+.strip-axis { position: relative; height: 22px; margin-left: var(--name-w); border-top: 1px solid var(--axis); }
+.strip-axis span { position: absolute; top: 5px; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); }
+
+/* Hover readout: value first, then what it is, then where it came from. */
+.tip {
+  position: fixed;
+  z-index: 10;
+  max-width: 260px;
+  padding: 8px 11px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 12.5px;
+  line-height: 1.4;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.tip[hidden] { display: none; }
+.tip-value { font-size: 15px; font-weight: 650; }
+.tip-detail { margin-top: 2px; font: 11px/1.4 var(--mono); opacity: 0.75; }
+
+@media (max-width: 560px) {
+  main { padding: 28px 16px 64px; }
+  .toc { margin: 0 -16px; padding: 8px 16px; gap: 2px 14px; }
+  .meta { text-align: left; }
+  .plot { grid-template-columns: 46px 1fr; }
+  .xaxis { margin-left: 46px; }
+  .xaxis.dated { margin-left: 60px; }
+  .strip-body.named { --name-w: 54px; }
+}
+@media print {
+  .tip { display: none; }
+  details > *:not(summary) { display: block; }
+}
+</style>
+</head>
+<body>
+<main>
+<header class="masthead"><div><h1 class="wordmark">Watchlist</h1><p class="company">2 companies, ranked by how soon the cash runs out</p></div><p class="meta">SEC filings as of 2026-11-13</p></header>
+<section class="block"><p class="eyebrow">Cash runway</p><h2>HYPR has the shortest runway: 16 to 19 months.</h2><figure class="chart strip"><div class="legend"><span><i class="sw solid"></i>Cash lasts at both recent burn rates</span><span><i class="sw pale"></i>Only at the lower burn rate</span></div><div class="strip-body named"><div class="strip-grid"><i style="left:8.49%"></i><i style="left:41.79%"></i><i style="left:75.18%"></i><i class="today" style="left:4.01%"><span>today</span></i></div><div class="strip-row"><div class="strip-name"><a href="../HYPR/2026-11-13.html">HYPR</a></div><div class="strip-main"><p class="strip-text"><span>16 to 19 months, running out between Feb 2028 and Apr 2028</span></p><div class="track"><span class="fill solid" style="left:0.00%;width:45.80%" tabindex="0" data-tip="Cash lasts at both burn rates|to Feb 2028|HYPR"></span><span class="fill pale end" style="left:calc(45.80% + 2px);width:calc(6.02% - 2px)" tabindex="0" data-tip="Only at the lower burn rate|to Apr 2028|HYPR"></span></div></div></div><div class="strip-row"><div class="strip-name"><a href="../BFLY/2026-11-13.html">BFLY</a></div><div class="strip-main"><p class="strip-text"><span>5.2 to 13.5 years, running out between Dec 2031 and Mar 2040</span></p><div class="track"><span class="fill solid" style="left:0.00%;width:100.00%" tabindex="0" data-tip="Cash lasts at both burn rates|to Dec 2031|BFLY"></span></div></div></div><div class="strip-axis"><span style="left:8.49%">2027</span><span style="left:41.79%">2028</span><span style="left:75.18%">2029</span></div></div><p class="chart-foot">Timeline starts at the balance sheet date, 2026-09-30, and shows 3 years. A bar that reaches the right edge continues past it.</p></figure><div class="table-wrap"><table><thead><tr><th class="ticker">Ticker</th><th class="date">Balance sheet date</th><th class="num">Cash and investments</th><th class="num">Burn, last quarter</th><th class="num">Burn, four-quarter average</th><th class="num">Runway at last quarter&#x27;s burn</th><th class="num">Runway at average burn</th></tr></thead><tbody><tr><td class="ticker"><a href="../HYPR/2026-11-13.html">HYPR</a></td><td class="date">2026-09-30</td><td class="num">$37.9M</td><td class="num">$6.1M</td><td class="num">$6.9M</td><td class="num">19 months</td><td class="num">16 months</td></tr><tr><td class="ticker"><a href="../BFLY/2026-11-13.html">BFLY</a></td><td class="date">2026-09-30</td><td class="num">$122.3M</td><td class="num">$2.3M</td><td class="num">$5.8M</td><td class="num">13.5 years</td><td class="num">5.2 years</td></tr></tbody></table></div></section>
+<section class="block"><p class="eyebrow">Dilution</p><h2>HYPR added the most shares: +34% in a year.</h2><div class="table-wrap"><table><thead><tr><th class="ticker">Ticker</th><th class="num">Shares outstanding</th><th class="num">One-year change</th><th class="num">Three-year change</th><th class="num">Potential new shares</th><th class="num">Potential as % of shares</th><th class="num">Net financing, last four quarters</th></tr></thead><tbody><tr><td class="ticker"><a href="../HYPR/2026-11-13.html">HYPR</a></td><td class="num">106.2M</td><td class="num">+34%</td><td class="num">+48%</td><td class="num">26.2M</td><td class="num">25%</td><td class="num">$44.5M</td></tr><tr><td class="ticker"><a href="../BFLY/2026-11-13.html">BFLY</a></td><td class="num">267.5M</td><td class="num">+6%</td><td class="num">+29%</td><td class="num">19.3M</td><td class="num">7%</td><td class="num">$5.6M</td></tr></tbody></table></div></section>
+<section class="block"><p class="eyebrow">Growth, valuation and setup</p><h2>HYPR is growing fastest: revenue +80% over four quarters.</h2><div class="table-wrap"><table><thead><tr><th class="ticker">Ticker</th><th class="num">Revenue growth, 4 quarters</th><th class="">Growth by stream, 4 quarters unless stated</th><th class="num">Gross margin, 4 quarters</th><th class="num">EV / sales</th><th class="num">Base case value per share</th><th class="num">Price against 200-day average</th><th class="num">Short interest, % of float</th><th class="num">Insider buys minus sales, 12 months</th><th class="num">8-Ks worth reading, 12 months</th><th class="">Next event</th></tr></thead><tbody><tr><td class="ticker"><a href="../HYPR/2026-11-13.html">HYPR</a></td><td class="num">+80%</td><td class="">Product +100% · Service +10%</td><td class="num">53%</td><td class="num">2.5x</td><td class="num">$1.32 (+95%) in 3 years, placeholder</td><td class="num">-39%</td><td class="num">4.4%</td><td class="num">-$39,245</td><td class="num">2</td><td class="">2027-03-31: 10-K due for the period ended 2026-12-31 (estimate)</td></tr><tr><td class="ticker"><a href="../BFLY/2026-11-13.html">BFLY</a></td><td class="num">+39%</td><td class="">Core business +6% · Embedded 5.2x (first 9 months)</td><td class="num">70%</td><td class="num">13.5x</td><td class="num">$17.14 (+157%) in 3 years, placeholder</td><td class="num">+9%</td><td class="num">15.9%</td><td class="num">-$103.3M</td><td class="num">1</td><td class="">2027-03-31: 10-K due for the period ended 2026-12-31 (estimate)</td></tr></tbody></table></div><p class="small">Revenue and margins from SEC filings; prices and short interest from yfinance (unofficial). Insider figures count open-market and 10b5-1 trades only. Each ticker's page has the sources.</p></section>
+<section class="block"><p class="eyebrow">Data notes</p><p class="note"><strong>Data note.</strong> HYPR: closed below $1.00 for the last 71 sessions. Exchange minimum bid rules (on Nasdaq, 30 consecutive business days) lead to a deficiency notice and often a reverse split; check recent 8-Ks for item 3.01</p></section>
+<footer><p>Generated 2026-11-13 from SEC EDGAR data and yfinance prices. Analysis of public filings and market data, not financial advice.</p></footer>
+</main>
+<div id="tip" class="tip" role="status" hidden></div>
+<script>
+// One shared readout for every chart mark. Hover and keyboard focus show the same thing.
+(() => {
+  const tip = document.getElementById("tip");
+  if (!tip) return;
+
+  const show = (el) => {
+    const [head, value, detail] = el.dataset.tip.split("|");
+    tip.replaceChildren();
+    for (const [cls, text] of [["tip-value", value], ["tip-head", head], ["tip-detail", detail]]) {
+      if (!text) continue;
+      const line = document.createElement("div");
+      line.className = cls;
+      line.textContent = text;
+      tip.append(line);
+    }
+    tip.hidden = false;
+    const mark = (el.querySelector(".bar, .slice > i") || el).getBoundingClientRect();  // .mark anchors on itself
+    const box = tip.getBoundingClientRect();
+    const x = Math.max(8, Math.min(mark.left + mark.width / 2 - box.width / 2, innerWidth - box.width - 8));
+    let y = mark.top - box.height - 8;
+    if (y < 8) y = mark.bottom + 8;
+    tip.style.left = `${x}px`;
+    tip.style.top = `${y}px`;
+  };
+  const hide = () => { tip.hidden = true; };
+
+  for (const el of document.querySelectorAll("[data-tip]")) {
+    el.addEventListener("pointerenter", () => show(el));
+    el.addEventListener("pointerleave", hide);
+    el.addEventListener("focus", () => show(el));
+    el.addEventListener("blur", hide);
+  }
+  addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+</body>
+</html>
