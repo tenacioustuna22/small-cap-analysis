@@ -41,6 +41,14 @@ outside the filings.
   - The share price also feeds back into value: ATM shares sold at a lower price cost holders more.
   - Conventional metrics still set the floor (bear and base cases) and how long BFLY can wait for
     deals.
+- **Why partners want the chip (checked 2026-11-17):**
+  - 8,960 elements, with the driving electronics on the chip itself, made in a semiconductor fab.
+  - That makes large, cheap, tileable arrays possible. Midjourney's scanner is a ring of 40 chips.
+  - Piezoelectric matrix arrays exist but cost far more. Exo Imaging's piezoelectric chip is the
+    main alternative.
+  - The chip turns ultrasound into raw data for software to read, which is why its buyers are AI
+    companies.
+  - Both big partners plan to put it in products, not just collect data with it.
 - **To test it:** track the date, partner and size of each new Embedded deal, alongside venture
   funding for brain interfaces and AI applications.
 

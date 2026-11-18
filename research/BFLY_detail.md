@@ -493,6 +493,83 @@ guidance covers only signed work.
   EDGAR under the same CIK) against actual results. That is the longest record of management's
   forecasts.
 
+## Why partners use the chip (checked 2026-11-17)
+
+**The owner's view:** a large array of transducers, each controlled electronically, is needed for
+brain interfaces and for Midjourney's scanner. Piezoelectric transducers can't fill that role.
+
+**What the sources support:**
+- **The chip:** 8,960 capacitive transducers (CMUTs) in a 140 x 64 grid, built on top of a CMOS
+  chip. The chip itself drives each element, measures the echo and processes the signal (Yole
+  teardown of the iQ).
+- **The wiring problem it solves:**
+  - A conventional probe wires each element to its own channel through the cable.
+  - That has not been practical above about 2,000 elements (Khuri-Yakub, Stanford).
+  - Fully wired 2D arrays are "cost-prohibitive" (review article, PMC).
+  - Putting the electronics under the elements removes the problem.
+- **Why that matters:**
+  - **Volume and cost:** made in a semiconductor fab, so the units are identical, cheap and can be
+    tiled.
+  - **Midjourney's scanner** is a ring of 40 chip modules (about 358,000 elements, estimate),
+    firing up to 1,000 times a second and combining the slices into a 3D map. Butterfly says future
+    generations will use "substantially more" modules (release, 2026-06-18).
+  - **Midjourney's own goal** is over 50,000 scanners by 2031 (Medical Design & Outsourcing). This
+    is an aspiration, with no FDA path yet; it starts with body composition.
+  - **Brain interfaces:**
+    - Forest 1 aims to sense and modulate activity across the whole brain, where deep brain
+      stimulation reaches one area (University of Plymouth).
+    - Merge Labs plans to read neural activity through ultrasound plus engineered molecules
+      (acoustic reporter genes, from Shapiro's Caltech work) instead of implanted electrodes.
+- **Why AI companies, specifically (Claude's reading):**
+  - The chip turns ultrasound from a picture a sonographer reads into a raw data stream that
+    software reads.
+  - Tomography from every angle (Midjourney says the scanner needs "over two petaflops") and
+    decoding brain activity from blood-flow signals are both compute-heavy model problems.
+  - So the link to AI runs through the method itself, not only through the partners' funding.
+- **This answers an open question:** Midjourney and Merge both plan to use the chip in products,
+  not just to collect data.
+  - Midjourney's terms include chip purchases and a hardware revenue share.
+  - Merge's include hardware purchase commitments and royalties on commercial sales.
+
+**Limits:**
+- **Piezoelectric arrays can do it too, at a cost.** High-end piezoelectric matrix probes with
+  integrated chips exist (Philips xMATRIX, listed with the iQ+ among matrix probes with ASICs). So
+  the edge is cost, scale and a ready platform to license, not that piezoelectric arrays can't do
+  it.
+- **The chip has weaknesses:**
+  - CMUTs need high drive voltage.
+  - Bulk piezoelectric transducers give more pressure per volt (focused-ultrasound literature).
+  - That matters for stimulating the brain through the skull.
+  - Forest's UK safety trial (ARIA-funded, from March 2025) enrolls people with part of the skull
+    removed, which shows that getting through the skull is still the hard part.
+- **Competition:**
+  - Exo Imaging makes a piezoelectric chip (PMUT, 4,096 elements). It has raised over $300M, and
+    Samsung Medison invested in 2025.
+  - Chinese ultrasound BCI companies (Gestala, Sisun) are unlikely to buy from a US supplier
+    (InsideBCI).
+- **Merge's exclusivity runs one way.** Merge uses only Butterfly for chip ultrasound, and Butterfly
+  can license others. No dollar terms were disclosed, and there is no 8-K, so Butterfly does not
+  treat the deal as material yet.
+- **Midjourney's scanner has open questions:**
+  - Butterfly's CEO says "about half a million sensors", which doesn't match 40 x 8,960. The gap is
+    unexplained.
+  - The trade press questions the price and who pays.
+- **Volume earns BFLY little by itself.** Midjourney buys chips at cost plus, so the revenue share
+  (rate redacted) is what turns scanner volume into profit.
+
+**Sources:**
+- [Butterfly on Midjourney's scanner, 2026-06-18](https://ir.butterflynetwork.com/News/press-releases/news-details/2026/Butterfly-Network-Provides-Commentary-on-Midjourney-Medicals-Full-Body-Ultrasound-Scanner-Announcement/default.aspx)
+- [Medical Design & Outsourcing on the scanner](https://www.medicaldesignandoutsourcing.com/midjourney-ultrasonic-ct-butterfly-network/)
+- [InsideBCI on the Merge deal](https://insidebci.com/news/2026-09-01-merge-labs-butterfly-network-poseidon-ultrasound-chip-bci-licensing-deal/)
+- [Merge Labs' approach, Futurism](https://futurism.com/health-medicine/sam-altman-startup-read-brain)
+- [Forest 1, University of Plymouth](https://www.plymouth.ac.uk/research/psychology/brain-research-and-imaging-centre/transcranial-ultrasound-stimulation/next-generation-brain-machine-interface-for-whole-brain-input-output)
+- [Forest trial, Digital Health](https://www.digitalhealth.net/2025/01/brain-implant-will-be-trialled-by-nhs-to-help-treat-neural-conditions)
+- [Yole teardown of the iQ chip](https://www.yolegroup.com/product/report/butterfly-network-iq-cmut-sensor/)
+- [Matrix probes with ASICs, review (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC9784751)
+- [Wiring limit, Khuri-Yakub](https://research.ece.ncsu.edu/wp-content/uploads/sites/17/2016/10/03_Khuri-Yakub_10.pdf)
+- [CMUT vs PMUT, Yole](https://www.yolegroup.com/strategy-insights/when-pmut-and-cmut-generate-an-echo-in-medical-imaging/)
+- [Exo Imaging, Pulse 2.0](https://pulse2.com/exo-imaging-35-million/)
+
 ## Embedded without Midjourney (estimate, 2026-11-16)
 
 $M. BFLY does not report Midjourney's revenue after Q4 2025, so the 2026 split is estimated from the
