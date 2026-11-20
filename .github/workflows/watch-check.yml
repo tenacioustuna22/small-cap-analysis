@@ -1,0 +1,141 @@
+# Watchlist check: a free feed check twice a day, and Claude reports only when it finds something.
+#
+# 1. scripts/watch_check.py reads research/<TICKER>_feeds.toml (no Claude usage) and logs new
+#    items in research/<TICKER>_seen.csv.
+# 2. If anything is waiting, it opens an issue labelled "watch", and Claude (Opus, on the owner's
+#    subscription) follows research/watch_agent_prompt.md and writes
+#    research/watch_reports/<TICKER>_<day>_<am|pm|weekend>.md.
+# 3. The report is posted as a comment on the issue, the items are marked reported and
+#    everything is committed.
+#
+# Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR) and CLAUDE_CODE_OAUTH_TOKEN
+# (from `claude setup-token`). Cron is in UTC: 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific
+# in winter, an hour later in summer.
+name: Watchlist check
+
+on:
+  schedule:
+    - cron: "30 14,21 * * *"  # twice a day: flagged items only
+    - cron: "0 15 * * 6"      # Saturday: weekend run (court docket, no-feed checks, W7)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "now = flagged items only; weekend = the Saturday run"
+        type: choice
+        options: [now, weekend]
+        default: now
+
+permissions:
+  contents: write
+  issues: write
+  id-token: write
+
+concurrency:
+  group: watch-check
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Mode and report name
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then mode="${{ inputs.mode }}"
+          elif [ "${{ github.event.schedule }}" = "0 15 * * 6" ]; then mode=weekend
+          else mode=now; fi
+          if [ "$mode" = weekend ]; then slot=weekend
+          elif [ "$(TZ=America/Los_Angeles date +%-H)" -lt 12 ]; then slot=am
+          else slot=pm; fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "slot=$slot" >> "$GITHUB_OUTPUT"
+          echo "day=$(TZ=America/Los_Angeles date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Free check
+        id: check
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python scripts/watch_check.py --mode ${{ steps.mode.outputs.mode }} --issue-body watch_out/issue.md
+
+      - name: Save the seen-log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in research/*_seen.csv research/*_watch_state.json; do [ ! -e "$f" ] || git add "$f"; done
+          if ! git diff --cached --quiet; then
+            git commit -m "Watch check ${{ steps.mode.outputs.day }} ${{ steps.mode.outputs.slot }}: log new items"
+            git pull --rebase && git push
+          fi
+
+      - name: Open the issue
+        id: issue
+        if: steps.check.outputs.has_new == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create watch --color 1D76DB --description "Watchlist check" --force
+          url=$(gh issue create --label watch --body-file watch_out/issue.md \
+            --title "Watch ${{ steps.check.outputs.tickers }}: ${{ steps.mode.outputs.day }} ${{ steps.mode.outputs.slot }}")
+          echo "number=${url##*/}" >> "$GITHUB_OUTPUT"
+
+      - name: Claude's report
+        if: steps.check.outputs.has_new == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ github.token }}
+          prompt: |
+            Read research/watch_agent_prompt.md and follow it.
+            Mode: ${{ steps.mode.outputs.mode }}
+            Tickers: ${{ steps.check.outputs.tickers }}
+            Waiting items: watch_out/issue.md
+            Report file for each ticker: research/watch_reports/<TICKER>_${{ steps.mode.outputs.day }}_${{ steps.mode.outputs.slot }}.md
+          claude_args: >-
+            --model opus
+            --max-turns 40
+            --allowedTools "Read,Write,Glob,Grep,WebFetch,WebSearch"
+
+      - name: Post the report and mark items reported
+        if: always() && steps.check.outputs.has_new == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          day="${{ steps.mode.outputs.day }}"; slot="${{ steps.mode.outputs.slot }}"
+          : > watch_out/comment.md
+          missing=""
+          for t in ${{ steps.check.outputs.tickers }}; do
+            f="research/watch_reports/${t}_${day}_${slot}.md"
+            if [ -f "$f" ]; then
+              cat "$f" >> watch_out/comment.md
+              printf '\n\nFile: https://github.com/${{ github.repository }}/blob/main/%s\n\n' "$f" >> watch_out/comment.md
+            else
+              missing="$missing $t"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "Claude's report did not arrive for:$missing. Those items stay new and go to the next run. Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> watch_out/comment.md
+          fi
+          gh issue comment "${{ steps.issue.outputs.number }}" --body-file watch_out/comment.md
+          reported=""
+          for t in ${{ steps.check.outputs.tickers }}; do
+            case " $missing " in *" $t "*) ;; *) reported="$reported $t";; esac
+          done
+          if [ -n "$reported" ]; then
+            python scripts/watch_check.py $reported --mode ${{ steps.mode.outputs.mode }} --mark-reported
+          fi
+          for f in research/watch_reports research/*_seen.csv; do [ ! -e "$f" ] || git add "$f"; done
+          if ! git diff --cached --quiet; then
+            git commit -m "Watch report $day $slot:${reported:- none}"
+            git pull --rebase && git push
+          fi
+          [ -z "$missing" ]

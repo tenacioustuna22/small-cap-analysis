@@ -37,9 +37,9 @@ Frame conclusions for both horizons: the multi-year thesis, and the near-term se
 
 1. **Build the full analysis** with the owner, as was done for BFLY: reports, scenarios, research
    notes, and a working hypothesis at the top of `research/<TICKER>.md`.
-2. **Write a watchlist,** `research/<TICKER>_watch.md`, of what could move the price. A separate
-   Claude project reads it from GitHub (the repo is public) and checks for new information
-   periodically. It reads the file cold, so the file must stand alone:
+2. **Write a watchlist,** `research/<TICKER>_watch.md`, of what could move the price. Claude,
+   run by GitHub Actions, reads it cold (see "Watchlist automation" below), so the file must
+   stand alone:
    - a three-line thesis
    - for each item: what to check, which part of the thesis it tests, exact URLs, how often, a
      baseline (last known value and date), and what counts as significant
@@ -48,8 +48,37 @@ Frame conclusions for both horizons: the multi-year thesis, and the near-term se
 
    Leave out what `scripts/report.py` already covers (8-K items, Form 4s, earnings dates, prices,
    short interest). Focus on press releases, partner funding, news and sector data.
-3. **When the owner brings findings back,** check them, add them to the research notes, and update
-   the watchlist's baselines so the checker doesn't report the same item twice.
+   Also write `research/<TICKER>_feeds.toml`, the queries the free check runs. Copy BFLY's, and
+   dry-run it to tune `title_must` and the blocklist.
+3. **When the owner brings findings back** (or a `watch` issue's report arrives):
+   - check them and add them to the research notes
+   - update the watchlist's baselines
+   - set the matching `research/<TICKER>_seen.csv` rows to `baselined` or `dismissed`
+   - close the issue.
+
+   Run `git pull` first, because the workflow commits to `main`.
+
+## Watchlist automation (2026-11-20)
+
+`.github/workflows/watch-check.yml` runs on GitHub at 14:30 and 21:30 UTC every day, and on
+Saturdays at 15:00 UTC.
+
+- **Free check:** `scripts/watch_check.py` reads every `research/*_feeds.toml` (RSS, Google News
+  RSS, CourtListener, EDGAR 8-K, Form D and earnings filings), filters the results, and appends new
+  items to `research/<TICKER>_seen.csv`. The status column runs `new`, then `reported`, then
+  `baselined` or `dismissed`. Source failures and the W7 correlation go in
+  `research/<TICKER>_watch_state.json`. Pure logic lives in `src/news_watch.py` and fetching in
+  `src/feeds.py`.
+- **Claude, only when something is waiting:**
+  - The workflow opens an issue labelled `watch`.
+  - It runs `anthropics/claude-code-action` (Opus, on the owner's subscription through
+    `CLAUDE_CODE_OAUTH_TOKEN`) with `research/watch_agent_prompt.md`.
+  - The report goes to `research/watch_reports/<TICKER>_<day>_<am|pm|weekend>.md` and is posted
+    on the issue.
+  - Items are then marked `reported`. A failed report leaves them `new` for the next run.
+- **Saturday:** the run also covers `notify = "weekend"` sources (the court docket), the
+  `[[weekend_only]]` checks with no free feed, and the W7 correlation.
+- **Repo secrets:** `SEC_USER_AGENT` and `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Data sources (free only)
 
@@ -124,6 +153,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\daily_report.ps1
 # Dilution: share count trend, overhang, offering filings, quotes on ATM/shelf programs
 .\.venv\Scripts\python.exe scripts\dilution.py
 .\.venv\Scripts\python.exe scripts\dilution.py HUMA --months 12 --sentences 20
+
+# Watchlist news check (free; the GitHub workflow runs it): print what is new, change nothing
+.\.venv\Scripts\python.exe scripts\watch_check.py BFLY --dry-run
+.\.venv\Scripts\python.exe scripts\watch_check.py BFLY --mode weekend --dry-run  # adds W7
 
 # Path to profitability next to EV/sales: active and peer tickers, or specific ones
 .\.venv\Scripts\python.exe scripts\profitability.py

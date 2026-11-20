@@ -1,0 +1,275 @@
+# Feeds for the free watchlist check (scripts/watch_check.py), read twice a day by
+# .github/workflows/watch-check.yml. Items refer to research/BFLY_watch.md (W1-W7).
+#
+# Top level
+#   ticker, baseline_date     entries published before baseline_date are ignored
+#   [promote]                 a title matching `title` is filed under `item`, whatever the source
+#   [filters]                 blocked_domains (and their subdomains); blocked_titles (regexes)
+#   [[weekend_only]]          checks with no working free feed; the weekend Claude run does them
+#
+# [[source]] keys
+#   name                      unique label; it appears in the seen-log and the issue
+#   item                      W1..W7
+#   kind                      rss | google_news | sec_8k | sec_form_d | sec_earnings | correlation
+#   notify                    "now" (Claude reports on it in the same run, the default) or
+#                             "weekend" (logged; Claude reads it in the Saturday run)
+#   title_must                optional regex the title must match (case-insensitive)
+#   match_titles              de-duplicate on the title as well as the URL (default true;
+#                             false for feeds whose titles repeat, such as a court docket)
+#   rss: url | google_news: query (searched over the last 7 days)
+#   sec_8k: ticker, items | sec_form_d: company, cik | sec_earnings: tickers
+#   correlation: ticker, benchmark, window (days, 60), low (0.3), move (0.2); weekend runs only
+#
+# Titles are matched case-insensitively. To silence a noisy source, tighten its title_must
+# before deleting it.
+
+ticker = "BFLY"
+baseline_date = 2026-11-18
+
+[promote]
+title = 'Butterfly Network|Ultrasound-on-Chip|Butterfly Embedded'
+item = "W1"
+
+[filters]
+blocked_domains = [
+  "simplywall.st", "stocktitan.net", "marketbeat.com", "zacks.com", "gurufocus.com",
+  "marketscreener.com", "otcmarkets.com", "tradersunion.com", "globalbankingandfinance.com",
+  "tipranks.com", "insidermonkey.com", "defenseworld.net", "etfdailynews.com",
+  "americanbankingnews.com", "tickerreport.com", "investorsobserver.com", "stockstory.org",
+  "felloai.com",
+]
+blocked_titles = [
+  'stock price, news, quote',
+  '\b(falls|rises|gains|drops|slips|climbs|jumps|soars|plunges|sinks|tumbles|surges|up|down)\b [\d.]+%',
+  'price target',
+  '\b(upgraded|downgraded|upgrades|downgrades|initiates coverage|reiterated)\b',
+  'short interest',
+  '\b(shares|stock|stake|position)\b.*\b(sold|bought|acquired|purchased|raised|lowered|trimmed|boosted|increased|decreased) by\b',
+  'insider (selling|buying|sells|buys|sold|bought)',
+  '\bhow to buy\b',
+  # insider trades are covered by the Form 4 section of scripts/report.py
+  '\bForm (4|144)\b',
+  '\b(sells|buys|sold|bought) \$[\d.,]+ ?[MKB]?\w* (in|of|worth)\b',
+]
+
+# ---------------------------------------------------------------- W1 Embedded deals
+
+[[source]]
+name = "Butterfly press releases"
+item = "W1"
+kind = "rss"
+url = "https://ir.butterflynetwork.com/rss/PressRelease.aspx"
+
+[[source]]
+name = "News: Butterfly Network"
+item = "W1"
+kind = "google_news"
+query = '"Butterfly Network"'
+
+[[source]]
+name = "News: Ultrasound-on-Chip"
+item = "W1"
+kind = "google_news"
+query = '"Ultrasound-on-Chip"'
+
+[[source]]
+name = "News: Butterfly Embedded"
+item = "W1"
+kind = "google_news"
+query = '"Butterfly Embedded"'
+
+[[source]]
+name = "News: Poseidon chip"
+item = "W1"
+kind = "google_news"
+query = 'Poseidon ultrasound chip'
+title_must = 'Poseidon'
+
+[[source]]
+name = "News: Apollo chip"
+item = "W1"
+kind = "google_news"
+query = 'Apollo Butterfly ultrasound chip'
+title_must = 'Apollo'
+
+# 8-K items: 1.01 material agreement, 7.01 Regulation FD (often a deck or release), 8.01 other.
+# The local daily report (scripts/report.py) also lists 8-Ks; this one sends a notification.
+[[source]]
+name = "BFLY 8-K"
+item = "W1"
+kind = "sec_8k"
+ticker = "BFLY"
+items = ["1.01", "7.01", "8.01"]
+
+# ---------------------------------------------------------------- W2 partners
+# A partner title that mentions Butterfly is promoted to W1 (see [promote]).
+
+[[source]]
+name = "News: Merge Labs"
+item = "W2"
+kind = "google_news"
+query = '"Merge Labs"'
+title_must = 'Merge Labs'
+
+[[source]]
+name = "News: Bridge Neurotech"
+item = "W2"
+kind = "google_news"
+query = '"Bridge Neurotech"'
+title_must = 'Bridge Neurotech'
+
+[[source]]
+name = "News: Forest Neurotech"
+item = "W2"
+kind = "google_news"
+query = '"Forest Neurotech"'
+title_must = 'Forest Neurotech'
+
+[[source]]
+name = "News: Mendaera"
+item = "W2"
+kind = "google_news"
+query = '"Mendaera"'
+title_must = 'Mendaera'
+
+[[source]]
+name = "News: Sonic Incytes"
+item = "W2"
+kind = "google_news"
+query = '"Sonic Incytes"'
+title_must = 'Sonic Incytes'
+
+[[source]]
+name = "News: Aleph Neuro"
+item = "W2"
+kind = "google_news"
+query = '"Aleph Neuro"'
+title_must = 'Aleph Neuro'
+
+# ---------------------------------------------------------------- W3 Midjourney
+
+[[source]]
+name = "News: Midjourney medical"
+item = "W3"
+kind = "google_news"
+query = 'Midjourney (medical OR ultrasound OR scanner OR spa OR health OR patent OR hardware)'
+title_must = '^(?=.*Midjourney)(?=.*(medical|ultrasound|scan|spa\b|health|patent|hardware|body|imaging|FDA))'
+
+[[source]]
+name = "News: Midjourney lawsuit"
+item = "W3"
+kind = "google_news"
+query = 'Midjourney (Disney OR Universal OR "Warner Bros") lawsuit'
+title_must = '^(?=.*Midjourney)(?=.*(Disney|Universal|Warner|lawsuit|sues?\b|sued|court|copyright|judge|ruling|settle|trial|injunction))'
+
+[[source]]
+name = "News: Midjourney finances"
+item = "W3"
+kind = "google_news"
+query = 'Midjourney (revenue OR funding OR raises OR valuation OR layoffs OR investors)'
+title_must = '^(?=.*Midjourney)(?=.*(revenue|funding|rais|valuation|layoff|investor|subscri|profit))'
+
+# Every filing on the docket, several a week: logged for the Saturday run, not sent now.
+# Rulings reach the news and are flagged by "News: Midjourney lawsuit".
+[[source]]
+name = "Court docket: Midjourney cases"
+item = "W3"
+kind = "rss"
+url = "https://www.courtlistener.com/feed/search/?q=Midjourney&type=r&order_by=entry_date_filed+desc"
+title_must = 'Midjourney'
+notify = "weekend"
+match_titles = false
+
+# ---------------------------------------------------------------- W4 sector venture funding
+
+[[source]]
+name = "News: PitchBook-NVCA Venture Monitor"
+item = "W4"
+kind = "google_news"
+query = '"Venture Monitor" PitchBook NVCA'
+title_must = 'Venture Monitor|\b(Q[1-4]|quarter)\b.*\b(venture|VC)\b'
+
+[[source]]
+name = "News: Crunchbase quarterly funding"
+item = "W4"
+kind = "google_news"
+query = 'Crunchbase global venture funding quarter'
+title_must = '^(?=.*(venture|funding|VC))(?=.*(\bQ[1-4]\b|quarter))'
+
+# ---------------------------------------------------------------- W5 brain-interface peers, chips
+
+[[source]]
+name = "News: Exo Imaging"
+item = "W5"
+kind = "google_news"
+query = '"Exo Imaging" OR "Exo Iris"'
+title_must = '\bExo\b'
+
+[[source]]
+name = "News: Neuralink funding"
+item = "W5"
+kind = "google_news"
+query = 'Neuralink (raises OR funding OR valuation OR "Series")'
+title_must = '^(?=.*Neuralink)(?=.*(rais|fund|valuation|series|round|invest))'
+
+[[source]]
+name = "News: Synchron"
+item = "W5"
+kind = "google_news"
+query = '"Synchron" brain'
+title_must = 'Synchron'
+
+[[source]]
+name = "News: Precision Neuroscience"
+item = "W5"
+kind = "google_news"
+query = '"Precision Neuroscience"'
+title_must = 'Precision Neuroscience'
+
+[[source]]
+name = "News: brain-interface funding rounds"
+item = "W5"
+kind = "google_news"
+query = '"brain-computer interface" (raises OR funding OR "Series")'
+title_must = '^(?=.*(brain|BCI|neural|neuro|implant))(?=.*(rais|fund|series|round|valuation))'
+
+[[source]]
+name = "News: ultrasound brain interfaces"
+item = "W5"
+kind = "google_news"
+query = 'ultrasound ("brain-computer interface" OR BCI OR "functional ultrasound")'
+title_must = 'ultrasound|sonic|sonogenetic'
+
+# ---------------------------------------------------------------- W6 AI spending cycle
+
+[[source]]
+name = "Big tech earnings filings"
+item = "W6"
+kind = "sec_earnings"
+tickers = ["MSFT", "GOOGL", "AMZN", "META", "ORCL", "NVDA"]
+
+# ---------------------------------------------------------------- W7 trading on AI sentiment
+
+[[source]]
+name = "BFLY vs ARKK correlation"
+item = "W7"
+kind = "correlation"
+ticker = "BFLY"
+benchmark = "ARKK"
+window = 60
+low = 0.3
+move = 0.2
+
+# ---------------------------------------------------------------- no free feed
+
+[[weekend_only]]
+item = "W3"
+check = "Midjourney Medical blog: any new post"
+url = "https://www.midjourney.com/medical/blogpost"
+reason = "Cloudflare blocks automated fetches (HTTP 403, tested 2026-11-19)"
+
+[[weekend_only]]
+item = "W2"
+check = "SEC Form D filings for Merge Labs, Bridge Neurotech, Mendaera, Aleph Neuro, Sonic Incytes"
+url = "https://www.sec.gov/cgi-bin/browse-edgar?company=merge+labs&type=D&owner=include&action=getcompany"
+reason = "the free check needs each company's CIK, not yet looked up"

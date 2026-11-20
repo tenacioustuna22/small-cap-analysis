@@ -1,8 +1,18 @@
 # BFLY watchlist: what could move the price
 
-**For the checker (a Claude project reading this from GitHub).** Check the items below for
-information newer than each baseline, and report in the format at the bottom. Baselines are as of
-**2026-11-18** unless the item says otherwise.
+**For the checker.** Check the items below for information newer than each baseline, and report
+in the format at the bottom. Baselines are as of **2026-11-18** unless the item says otherwise.
+
+**How the checking is automated:**
+
+- **The free check:** twice a day, `scripts/watch_check.py` reads the news feeds and EDGAR queries
+  in `research/BFLY_feeds.toml`. It logs anything new in `research/BFLY_seen.csv` and uses no
+  Claude.
+- **Claude's report:** when the free check finds something, Claude follows
+  `research/watch_agent_prompt.md`, judges the items against this file, and writes a report in
+  `research/watch_reports/`. The report is posted to a GitHub issue labelled `watch`.
+- **Saturdays:** Claude also covers the court docket, the checks with no free feed, and W7.
+- **The workflow** is `.github/workflows/watch-check.yml`.
 
 - **This file:**
   <https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis/main/research/BFLY_watch.md>
@@ -15,7 +25,9 @@ information newer than each baseline, and report in the format at the bottom. Ba
 1. **Every figure needs a source link and a date.** Never state a number from memory. If a source
    is secondary (news, aggregator), label it **(unverified)**.
 2. **Only report what is newer than the baseline.** If a finding repeats the baseline, leave it
-   out. If it conflicts with the baseline, report the conflict and both sources.
+   out. If it conflicts with the baseline, report the conflict and both sources. Rows in
+   `research/BFLY_seen.csv` marked `reported`, `baselined` or `dismissed` have already been
+   reported; don't report them again.
 3. **If you could not check an item,** say so and why (page wouldn't load, no access). Don't skip
    it silently.
 4. **No buy or sell advice.** Say which part of the thesis a finding supports or weakens, and why.
@@ -24,6 +36,9 @@ information newer than each baseline, and report in the format at the bottom. Ba
    - Yahoo analyst consensus
    - BFLY's SEC 8-K items, Form 4 insider trades and 13D/G holder filings
    - earnings dates.
+
+   Exception: the free check flags BFLY 8-K items 1.01, 7.01 and 8.01, because a new Embedded
+   deal can appear there first. When one is flagged, read it for W1.
 
 ## The thesis in three lines
 
@@ -219,23 +234,39 @@ information newer than each baseline, and report in the format at the bottom. Ba
 ## Report format
 
 ```
+BFLY: <n> significant, <n> new, <n> nothing new, <n> skipped   (one line, for the notification)
+
 BFLY watch report, <date checked>
 Baselines read from BFLY_watch.md as of <baseline date in the file>
 
 New findings
-- [W#] <what happened>, <date of the event>. Source: <link> (unverified if secondary)
+- [W#] SIGNIFICANT (only if it meets the item's "Significant" list) <what happened>,
+  <date of the event>. Source: <link> (unverified if secondary)
   Thesis: supports / weakens / neutral, because <one line>
   Suggested new baseline: <value, date>
 
 Nothing new
 - W#, W#: checked, nothing newer than the baseline
 
+Skipped (not relevant to the thesis, judged from the title)
+- <title>, <publisher>
+
+Not read (page limit reached)
+- [W#] <title>: <link>
+
 Could not check
 - W#: <reason>
 
-Coming up in the next 30 days (from the calendar or news)
+Coming up in the next 30 days (from the calendar or news; weekend runs)
 - <date>: <event>
 ```
 
-When the owner brings a report back to the stock-analysis project, the findings are checked,
-added to the research notes, and the baselines in this file are updated.
+Leave out a section that would be empty, except "Nothing new" and "Could not check". Write
+"none" there.
+
+When the owner brings a report back to the stock-analysis project:
+
+- the findings are checked and added to the research notes
+- the baselines in this file are updated
+- the matching rows in `BFLY_seen.csv` are set to `baselined` or `dismissed`
+- the `watch` issue is closed.

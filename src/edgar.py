@@ -138,7 +138,11 @@ def company_facts(ticker: str, refresh: bool = False) -> dict:
 
 def submissions(ticker: str, refresh: bool = False) -> dict:
     """Company profile and its most recent filings, as returned by data.sec.gov."""
-    cik = ticker_to_cik(ticker, refresh)
+    return submissions_for_cik(ticker_to_cik(ticker, refresh), refresh)
+
+
+def submissions_for_cik(cik: int, refresh: bool = False) -> dict:
+    """The same, by CIK, for companies with no ticker (private issuers filing Form D)."""
     return _get_json(
         SUBMISSIONS_URL.format(cik=cik),
         CACHE_DIR / "submissions" / f"CIK{cik:010d}.json",
