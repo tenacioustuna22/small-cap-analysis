@@ -125,6 +125,8 @@ jobs:
           if [ -n "$missing" ]; then
             echo "Claude's report did not arrive for:$missing. Those items stay new and go to the next run. Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> watch_out/comment.md
           fi
+          # GitHub mobile pushes mentions reliably, but not new issues in a watched repo.
+          printf 'cc @%s\n' "${{ github.repository_owner }}" >> watch_out/comment.md
           gh issue comment "${{ steps.issue.outputs.number }}" --body-file watch_out/comment.md
           reported=""
           for t in ${{ steps.check.outputs.tickers }}; do
