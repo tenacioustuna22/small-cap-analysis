@@ -227,6 +227,13 @@ query = '"Precision Neuroscience"'
 title_must = 'Precision Neuroscience'
 
 [[source]]
+name = "News: Science Corp"
+item = "W5"
+kind = "google_news"
+query = '"Science Corp" OR "Science Corporation" brain'
+title_must = 'Science Corp'
+
+[[source]]
 name = "News: brain-interface funding rounds"
 item = "W5"
 kind = "google_news"

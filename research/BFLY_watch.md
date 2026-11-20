@@ -93,15 +93,21 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
   - SEC Form D filings, which companies file when raising private money. Search EDGAR company
     names, for example
     [Merge Labs](https://www.sec.gov/cgi-bin/browse-edgar?company=merge+labs&type=D&owner=include&action=getcompany).
-    Form D can be late, missing or leave the amount blank.
-- **Baseline:**
+    Form D can be late, missing or leave the amount blank. None of the partners files under its own
+    name (EDGAR company search, 2026-11-20). "Merge Labs, Inc." (CIK 1675206) is an unrelated 2016
+    San Antonio company. An investment vehicle, "MERGE LABS Sep 2025 a Series of CGF2021 LLC" (CIK
+    2101077), filed a Form D on 2025-12-16. Use EDGAR full-text search by name, monthly.
+- **Baseline** (other partners recorded 2026-11-20):
 
   | Partner | Latest known funding | Source |
   |---|---|---|
   | Merge Labs | $252M seed, 2026-01-15, led by OpenAI with Bain Capital and others, at a reported ~$850M valuation | [SiliconANGLE](https://siliconangle.com/?p=727965), [Tom's Hardware](https://www.tomshardware.com/peripherals/wearable-tech/sam-altman-raises-usd252-million-for-brain-computer-interface-venture-but-merge-labs-is-still-in-an-early-research-phase) (unverified) |
   | Bridge Neurotech | $13.5M, General Catalyst | [TheNextWeb](https://thenextweb.com/news/bridge-neurotech-13-5m-ultrasound-brain-computer-interface) (unverified) |
   | Forest Neurotech | Research organization under Convergent Research; UK safety trial funded by ARIA from March 2025, running about 3.5 years | [Convergent Research](https://www.convergentresearch.org/ecosystem/forest), [Digital Health](https://www.digitalhealth.net/2025/01/brain-implant-will-be-trialled-by-nhs-to-help-treat-neural-conditions) |
-  | Aleph Neuro, Mendaera, Sonic Incytes | not recorded | first run: record the latest round |
+  | Mendaera | $73M Series B, 2024-09-26, led by Threshold Ventures with Lux Capital, PFM Health Sciences and Fred Moll. Earlier: $24M Series A (Lux, about Aug 2023, unverified) | [Business Wire release](https://www.businesswire.com/news/home/20240926902349/en) |
+  | Sonic Incytes | US$7.3M Series A, Dec 2021, led by Nimbus Synergies. CB Insights lists a later Series B; not confirmed | [company release via MedTech Innovator](https://medtechinnovator.org/sonic-incytes-successfully-completes-series-a-raise-of-us7-3m-to-accelerate-velacurtm-commercialization/); CB Insights (unverified) |
+  | Sonic Incytes, commercial | Multi-year partnership with Madrigal Pharmaceuticals (maker of Rezdiffra, a MASH drug) for Velacur ONE liver assessment, 2026-11-19. No financial terms. Velacur ONE got FDA 510(k) clearance K251728 (letter 2025-06-26). **Open:** no source says whether Velacur ONE uses Butterfly's chip. If it does, this is a W1 partner product on sale | [Business Wire via BioSpace](https://www.biospace.com/press-releases/sonic-incytes-announces-multi-year-partnership-with-madrigal-pharmaceuticals-to-advance-non-invasive-liver-assessment-in-mash), [FDA summary](https://fda.innolitics.com/device/K251728) |
+  | Aleph Neuro | No funding, investors or valuation disclosed, as of 2026-11-20. Launched publicly 2026-06-25 as a brain-interface research lab | [RuntimeWire](https://runtimewire.com/article/aleph-neuro-ultrasound-brain-imaging-launch) (unverified) |
 
 - **Significant:**
   - any new round, and its size against the last one
@@ -161,8 +167,25 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
     (search "PitchBook NVCA Venture Monitor")
   - [Crunchbase News](https://news.crunchbase.com/), for its AI and health funding roundups
   - neurotech or brain-computer-interface funding roundups in trade press.
-- **Baseline:** not recorded. **First run:** record the latest quarter's AI venture funding and any
-  neurotech or brain-interface total, with sources.
+- **Baseline** (recorded 2026-11-20; secondary summaries, as the report PDF was not opened):
+  - **US venture, Q3 2026 (PitchBook-NVCA Venture Monitor):**
+    - $98.4B of deal value across about 5,012 deals in the quarter
+    - $515.8B so far in 2026
+    - AI's share of deal value: 82.7% for 2026 to date, and 65.9% in Q3 alone.
+
+    Sources: [NVCA report PDF](https://nvca.org/wp-content/uploads/2026/10/Q3-2026-PitchBook-NVCA-Venture-Monitor.pdf),
+    [Relve summary](https://relvehq.com/blog/noise/pitchbook-venture-monitor-515b-exits-lag) (unverified).
+    The Q4 report is due about late January 2027.
+  - **Global, Q3 2026 (Crunchbase):** $159B, of which AI was 64% (search summary; unverified).
+  - **Brain interfaces:** no authoritative total. Two trackers:
+    - PitchBook, as reported by the FT on 2026-09-17: BCI funding passed $1B in 2026
+      ([remio summary](https://www.remio.ai/post/pitchbook-bci-funding-tops-1-billion-but-clinical-proof-still-lags))
+    - NewMarketPitch: about $933M in the first half of 2026
+      ([NewMarketPitch](https://newmarketpitch.com/blogs/news/brain-computer-interface-funding-deals)).
+
+    Both unverified, with different scopes, so don't compare them with each other. Chinese
+    start-ups closed at least 28 rounds from January to September 2026, against 4 for US ones
+    (same tracker).
 - **Significant:**
   - AI or neurotech funding falling noticeably from the previous quarter
   - large AI raises failing or being cut
@@ -175,8 +198,14 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **How often:** monthly.
 - **Where:** news searches for the companies listed below.
 - **Baseline:**
-  - **Brain-interface peers:** Neuralink, Synchron and Precision Neuroscience. Funding is not
-    recorded; **first run:** record each one's latest round.
+  - **Brain-interface peers** (recorded 2026-11-20; all secondary, so unverified):
+
+    | Peer | Latest known | Source |
+    |---|---|---|
+    | Neuralink | $650M Series E, June 2025, at about $9B. Aggregators claim 2026 rounds and $22-48B valuations; none confirmed | [Longevity.Technology](https://longevity.technology/news/neuralink-raises-600-million-to-advance-brain-computer-interface-tech/) |
+    | Synchron | $200M Series D, 2025-11-06, led by Double Point Ventures. **2026-11-12:** paused enrollment in its second-generation Stentrode trials after a performance problem with the device's lead. The company says it is not a safety issue and the FDA did not order it. A claimed June 2026 Series E is not confirmed | [Fierce Biotech](https://www.fiercebiotech.com/medtech/synchron-raises-200m-advance-its-brain-computer-interface-paralysis), [MD+DI](https://www.mddionline.com/neurological/synchron-s-bci-trial-pause-what-went-wrong-with-stentrode) |
+    | Precision Neuroscience | $250M Series D, 2026-09-25, co-led by Pershing Square and the Ackman Oxman Institute. $430M raised in total; about $1B valuation (NYT) | [MassDevice](https://www.massdevice.com/precision-neuroscience-raises-250m-in-series-d-for-its-bci/), [TheNextWeb](https://thenextweb.com/news/precision-neuroscience-250m-series-d-1bn-valuation-ackman) |
+    | Science Corp (added 2026-11-20) | $400M Series D, 2026-11-17/18. Investors: Khosla, Ackman Oxman Institute, Tenet Healthcare and others. More than $900M raised since 2021; a $3.5B valuation from one unnamed source. Its implant (PRIMA, retinal) uses light, not ultrasound. Previous round: $230M Series C, March 2026 | [MedTech Dive](https://www.medtechdive.com/news/science-corporation-raises-400m-to-commercialize-bci-device/875009/) |
   - **Ultrasound brain-interface companies:** Nudge (focused-ultrasound stimulation), and Gestala
     and Sisun Tech in China. These are unlikely to buy from a US supplier
     ([InsideBCI](https://insidebci.com/news/2026-09-01-merge-labs-butterfly-network-poseidon-ultrasound-chip-bci-licensing-deal/)).
@@ -197,8 +226,18 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **How often:** in earnings weeks, and monthly otherwise.
 - **Where:** each company's quarterly earnings release and call coverage: Microsoft, Alphabet,
   Amazon, Meta, Oracle, and Nvidia for data-center revenue.
-- **Baseline:** not recorded. **First run:** record each company's latest capex guidance (for its
-  current and next fiscal year) and Nvidia's latest data-center revenue and guidance, with sources.
+- **Baseline** (recorded 2026-11-20). Actual capex is from each earnings release (8-K exhibit
+  99.1). Guidance is often given only on the call; call figures are secondary, so unverified.
+  Nobody has guided 2027 yet; Q4 calls in late January and early February 2027 should.
+
+  | Company | Latest quarter's capex (release) | Guidance |
+  |---|---|---|
+  | Meta | $34.91B in Q3 2026, including principal payments on finance leases | 2026: $135-145B, narrowed from $130-145B (release, [8-K filed 2026-10-21](https://www.sec.gov/Archives/edgar/data/1326801/000162828026066700/meta-09302026xexhibit991.htm)). No 2027 figure |
+  | Alphabet | $51.4B of property and equipment purchases in Q3 2026, against $24.0B a year earlier ([8-K filed 2026-10-28](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm)) | 2026: $195-205B, kept on the 2026-10-28 call (unverified). Earlier it said 2027 would rise "significantly" |
+  | Microsoft | $39.4B of additions to property and equipment in the September 2026 quarter, against $19.4B a year earlier ([8-K filed 2026-10-28](https://www.sec.gov/Archives/edgar/data/789019/000119312526436122/msft-ex99_1.htm)) | not recorded (given on the call) |
+  | Amazon | $77.3B of property and equipment purchases in Q3 2026, against $35.1B a year earlier; $210.7B over four quarters, net of proceeds ([8-K filed 2026-10-29](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000038/amzn-20260930xex991.htm)) | not recorded (given on the call) |
+  | Oracle | see its [Q1 FY2027 release](https://www.sec.gov/Archives/edgar/data/1341439/000119312526387905/orcl-ex99_1.htm) (filed 2026-09-10) | FY2027 (ending May 2027): about $90-95B gross, of which about $70B is self-funded and $20-25B is to be repaid by customers. It also plans about $40B of debt and equity raising (2026-09-10 call; [Outlook Business](https://www.outlookbusiness.com/corporate/oracle-forecasts-95-bn-in-capex-for-fy27-plans-to-raise-40-bn-in-debt-and-equity), unverified) |
+  | Nvidia | Data-center revenue of $107.6B in Q3 FY2027 (ended 2026-10-25): up 110% on a year earlier and 21% on the quarter before ([CFO commentary, 8-K filed 2026-11-17](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27cfocommentary.htm)) | Q4 FY2027 revenue: $130.0B ±3%, assuming no data-center compute revenue from China ([release](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm)) |
 - **Significant:**
   - a capex guidance cut, or wording such as "moderating" or "digesting"
   - a widening gap between capex and cloud revenue growth
@@ -215,6 +254,9 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **Baseline:**
   - +0.72 from 2026-09-22 to 2026-11-16
   - +0.38 from April 2026 to 2026-09-22 (computed in the repo from yfinance).
+  - +0.62 over the 60 trading days from 2026-08-27 to 2026-11-19 (yfinance, computed 2026-11-20).
+    This is the window the Saturday run uses, so compare later values with this one, not with
+    the two above.
 - **If you can't compute it,** say so and skip it.
 - **Significant:**
   - **Falling toward 0.2-0.3:** BFLY is trading on its own news.
