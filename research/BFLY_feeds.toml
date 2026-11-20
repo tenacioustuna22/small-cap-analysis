@@ -268,8 +268,12 @@ check = "Midjourney Medical blog: any new post"
 url = "https://www.midjourney.com/medical/blogpost"
 reason = "Cloudflare blocks automated fetches (HTTP 403, tested 2026-11-19)"
 
+# EDGAR company search, 2026-11-20: none of the partners files under its own name. "Merge Labs,
+# Inc." (CIK 1675206) is an unrelated 2016 San Antonio company. "MERGE LABS Sep 2025 a Series of
+# CGF2021 LLC" (CIK 2101077) is an investment vehicle that bought into Merge Labs (Form D filed
+# 2025-12-16). Partner raises still reach the free check through the news queries.
 [[weekend_only]]
 item = "W2"
-check = "SEC Form D filings for Merge Labs, Bridge Neurotech, Mendaera, Aleph Neuro, Sonic Incytes"
-url = "https://www.sec.gov/cgi-bin/browse-edgar?company=merge+labs&type=D&owner=include&action=getcompany"
-reason = "the free check needs each company's CIK, not yet looked up"
+check = "Monthly (first weekend): EDGAR full-text search for new Form D filings naming Merge Labs, Bridge Neurotech, Mendaera, Aleph Neuro or Sonic Incytes, including investment vehicles named after them"
+url = "https://efts.sec.gov/LATEST/search-index?q=%22Merge%20Labs%22&forms=D"
+reason = "no partner has its own EDGAR number to watch (company search, 2026-11-20)"
