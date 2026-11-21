@@ -88,6 +88,7 @@ def test_the_bfly_feeds_file_loads():
     assert cfg.baseline_date == date(2026, 11, 18)
     assert {s["item"] for s in cfg.sources} == {"W1", "W2", "W3", "W4", "W5", "W6", "W7"}
     assert next(s for s in cfg.sources if s["kind"] == "correlation")["match_titles"] is False
+    assert {s["name"] for s in cfg.sources if s["fast"]} == {"Butterfly press releases", "BFLY 8-K"}
 
 
 def test_bfly_blocklist_drops_noise_and_keeps_news():
@@ -126,6 +127,16 @@ def test_config_rejects_unknown_keys_and_bad_items(tmp_path):
         nw.load_config(write_config(
             tmp_path, '[[source]]\nname="a"\nitem="W1"\nkind="rss"\nurl="u"\n' * 2
         ))
+
+
+def test_fast_flag_defaults_off_and_must_be_a_boolean_on_a_now_source(tmp_path):
+    rss = '[[source]]\nname="a"\nitem="W1"\nkind="rss"\nurl="u"\n'
+    assert nw.load_config(write_config(tmp_path, rss)).sources[0]["fast"] is False
+    assert nw.load_config(write_config(tmp_path, rss + "fast = true\n")).sources[0]["fast"] is True
+    with pytest.raises(nw.ConfigError, match="true or false"):
+        nw.load_config(write_config(tmp_path, rss + 'fast = "yes"\n'))
+    with pytest.raises(nw.ConfigError, match="is fast"):
+        nw.load_config(write_config(tmp_path, rss + 'fast = true\nnotify = "weekend"\n'))
 
 
 # ---------------------------------------------------------------- filtering

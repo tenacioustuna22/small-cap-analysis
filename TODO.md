@@ -1,5 +1,37 @@
 # BFLY scenarios: decisions and to-do
 
+## Next up: redesign the daily report (owner, 2026-11-21)
+
+The report pages (`scripts/report.py`) predate the thesis, the scenarios work and the watchlist.
+They also write a fresh dated copy of every page each day, though most of a page only changes
+with a new 10-Q or 10-K. Redesign them with the owner before automating them. Starting sketch:
+
+- **One page per ticker, kept up to date.** Overwrite it each run, with history in git, instead
+  of a new dated copy every day (about 600 KB of near-duplicates a day).
+- **"What changed since the last run" at the top:**
+  - the price and volume move
+  - new filings: 8-K items, Form 4 trades, offering filings, 10-Q/10-K
+  - short interest
+  - watch findings.
+
+  Say "nothing changed" when that's so.
+- **The status page built in:** the W1–W7 table from `research/BFLY/BFLY_status.md`, and the
+  three-line thesis.
+- **Slow sections below, each with its filing date:** runway, dilution, financials, scenarios.
+- **Then automate it:**
+  - a GitHub workflow after the close
+  - an `actions/cache` for `data/`
+  - `TZ=America/Los_Angeles`
+  - GitHub Pages for reading on the phone: add `.nojekyll`, or Pages drops `reports/_summary/`
+  - email only on failure.
+
+  The first run shows whether Yahoo blocks GitHub's machines. If it does, the price sections show
+  the error.
+- The Windows task "Stock analysis daily report" isn't registered on this PC (checked
+  2026-11-21), so the report isn't running anywhere now.
+- Old Markdown reports from 2026-11-12 are still in `reports/_summary/`, `HUMA/`, `HYPR/` and
+  `TMC/`. Remove them in the redesign.
+
 ## Readability (owner, 2026-11-21)
 
 Done 2026-11-21. The owner's view of where things stand is now

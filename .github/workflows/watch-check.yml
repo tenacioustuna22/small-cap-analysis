@@ -1,16 +1,25 @@
-# Watchlist check: a free feed check twice a day, and Claude reports only when it finds something.
+# Watchlist check: a free feed check twice a day, a fast lane every 15 minutes on weekdays, and
+# Claude reports only when something is found.
 #
 # 1. scripts/watch_check.py reads research/<TICKER>/watch/<TICKER>_feeds.toml (no Claude usage)
 #    and logs new items in research/<TICKER>/watch/<TICKER>_seen.csv.
 # 2. If anything is waiting, it opens an issue labelled "watch", and Claude (Opus, on the owner's
 #    subscription) follows research/watch_agent_prompt.md and writes
-#    research/<TICKER>/watch/reports/<TICKER>_<day>_<am|pm|weekend>.md.
+#    research/<TICKER>/watch/reports/<TICKER>_<day>_<am|pm|weekend|HHMM>.md.
 # 3. The report is posted as a comment on the issue, the items are marked reported and
 #    everything is committed.
 #
 # Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR) and CLAUDE_CODE_OAUTH_TOKEN
 # (from `claude setup-token`). Cron is in UTC: 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific
 # in winter, an hour later in summer. Saturday skips 14:30: the 15:00 weekend run covers it.
+#
+# Fast lane: on weekdays, every 15 minutes from 11:07 to 21:52 UTC (about 6 am to 5 pm Eastern in
+# winter, an hour later in summer), only sources marked `fast = true` in the feeds files (BFLY's
+# press releases and 8-Ks). Its report file is named by the Pacific time, for example _0637.
+#
+# All runs share one concurrency group, so two never edit the seen-log at once. GitHub keeps only
+# one waiting run per group; if runs pile up, a waiting one is dropped. Nothing is lost: the
+# seen-log is the record, and the next run picks up whatever is still new.
 name: Watchlist check
 
 on:
@@ -18,12 +27,13 @@ on:
     - cron: "30 14 * * 0-5"   # mornings except Saturday: flagged items only
     - cron: "30 21 * * *"     # afternoons: flagged items only
     - cron: "0 15 * * 6"      # Saturday: weekend run (court docket, no-feed checks, W7)
+    - cron: "7,22,37,52 11-21 * * 1-5"  # weekdays: fast lane (fast = true sources only)
   workflow_dispatch:
     inputs:
       mode:
-        description: "now = flagged items only; weekend = the Saturday run"
+        description: "now = flagged items only; weekend = the Saturday run; fast = fast lane only"
         type: choice
-        options: [now, weekend]
+        options: [now, weekend, fast]
         default: now
 
 permissions:
@@ -54,11 +64,16 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then mode="${{ inputs.mode }}"
           elif [ "${{ github.event.schedule }}" = "0 15 * * 6" ]; then mode=weekend
+          elif [ "${{ github.event.schedule }}" = "7,22,37,52 11-21 * * 1-5" ]; then mode=fast
           else mode=now; fi
           if [ "$mode" = weekend ]; then slot=weekend
+          elif [ "$mode" = fast ]; then slot="$(TZ=America/Los_Angeles date +%H%M)"
           elif [ "$(TZ=America/Los_Angeles date +%-H)" -lt 12 ]; then slot=am
           else slot=pm; fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          # Claude's instructions know "now" and "weekend"; a fast-lane run is a "now" run.
+          if [ "$mode" = weekend ]; then echo "claude_mode=weekend" >> "$GITHUB_OUTPUT"
+          else echo "claude_mode=now" >> "$GITHUB_OUTPUT"; fi
           echo "slot=$slot" >> "$GITHUB_OUTPUT"
           echo "day=$(TZ=America/Los_Angeles date +%F)" >> "$GITHUB_OUTPUT"
 
@@ -97,7 +112,7 @@ jobs:
           github_token: ${{ github.token }}
           prompt: |
             Read research/watch_agent_prompt.md and follow it.
-            Mode: ${{ steps.mode.outputs.mode }}
+            Mode: ${{ steps.mode.outputs.claude_mode }}
             Tickers: ${{ steps.check.outputs.tickers }}
             Waiting items: watch_out/issue.md
             Report file for each ticker: research/<TICKER>/watch/reports/<TICKER>_${{ steps.mode.outputs.day }}_${{ steps.mode.outputs.slot }}.md

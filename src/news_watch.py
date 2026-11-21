@@ -22,7 +22,7 @@ SEEN_COLUMNS = ("first_seen", "item", "notify", "source", "title", "publisher", 
 STATUSES = ("new", "reported", "baselined", "dismissed")
 NOTIFY = ("now", "weekend")
 
-COMMON_KEYS = {"name", "kind", "item", "notify", "title_must", "match_titles"}
+COMMON_KEYS = {"name", "kind", "item", "notify", "title_must", "match_titles", "fast"}
 KIND_KEYS = {
     "rss": {"url"},
     "google_news": {"query"},
@@ -109,6 +109,11 @@ def load_config(path: Path) -> Config:
         if source["notify"] not in NOTIFY:
             raise ConfigError(f"{path.name}: source '{name}' notify must be one of {NOTIFY}")
         source.setdefault("match_titles", kind not in ("correlation",))
+        source.setdefault("fast", False)
+        if not isinstance(source["fast"], bool):
+            raise ConfigError(f"{path.name}: source '{name}' fast must be true or false")
+        if source["fast"] and source["notify"] != "now":
+            raise ConfigError(f"{path.name}: source '{name}' is fast, so notify must be \"now\"")
 
     baseline = raw["baseline_date"]
     if isinstance(baseline, str):

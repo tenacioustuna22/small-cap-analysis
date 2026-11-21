@@ -4,7 +4,9 @@ You are run by `.github/workflows/watch-check.yml` after the free check
 (`scripts/watch_check.py`) has found items for one or more tickers. The workflow's prompt tells
 you:
 
-- the **mode**: `now` (flagged items) or `weekend` (Saturday)
+- the **mode**: `now` (flagged items) or `weekend` (Saturday). Fast-lane runs, every 15 minutes on
+  weekdays for the company's own press releases and 8-Ks, arrive as `now` runs: report them the
+  same way, briefly, because the owner may act on them during the trading day
 - the **tickers**
 - the **waiting items**: a file listing what the check found, grouped by watchlist item (W1, W2,
   ...), with links, dates and any sources it could not check

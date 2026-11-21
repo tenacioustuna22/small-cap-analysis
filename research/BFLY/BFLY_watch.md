@@ -11,6 +11,9 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **Claude's report:** when the free check finds something, Claude follows
   `research/watch_agent_prompt.md`, judges the items against this file, and writes a report in
   `research/BFLY/watch/reports/`. The report is posted to a GitHub issue labelled `watch`.
+- **Fast lane:** on weekdays, every 15 minutes around market hours, the free check also looks at
+  Butterfly's press releases and its 8-Ks only, so a deal announcement is reported within about
+  half an hour.
 - **Saturdays:** Claude also covers the court docket, the checks with no free feed, and W7.
 - **The workflow** is `.github/workflows/watch-check.yml`.
 

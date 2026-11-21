@@ -9,6 +9,7 @@ Usage:
     python scripts/watch_check.py                      every ticker with a feeds file
     python scripts/watch_check.py BFLY --dry-run       print what is new, change nothing
     python scripts/watch_check.py --mode weekend       also the weekend-only sources (W7)
+    python scripts/watch_check.py --mode fast          only sources marked fast = true
     python scripts/watch_check.py --issue-body out.md  write the issue text for the workflow
     python scripts/watch_check.py --mark-reported      after Claude's report: new -> reported
 """
@@ -123,6 +124,8 @@ def check(ticker: str, mode: str, dry_run: bool, today: date) -> tuple[list[dict
     for source in config.sources:
         if source["kind"] == "correlation" and mode != "weekend":
             continue
+        if mode == "fast" and not source["fast"]:
+            continue
         name = source["name"]
         try:
             if source["kind"] == "correlation":
@@ -168,7 +171,7 @@ def main() -> int:
     parser.add_argument(
         "tickers", nargs="*", help="tickers (default: every research/*/watch/*_feeds.toml)"
     )
-    parser.add_argument("--mode", choices=("now", "weekend"), default="now")
+    parser.add_argument("--mode", choices=("now", "weekend", "fast"), default="now")
     parser.add_argument("--dry-run", action="store_true", help="print only; change no files")
     parser.add_argument("--issue-body", type=Path, help="write the GitHub issue text here")
     parser.add_argument("--mark-reported", action="store_true", help="set waiting rows to reported")

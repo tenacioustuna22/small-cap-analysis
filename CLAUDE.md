@@ -68,7 +68,12 @@ Frame conclusions for both horizons: the multi-year thesis, and the near-term se
 ## Watchlist automation (2026-11-20)
 
 `.github/workflows/watch-check.yml` runs on GitHub at 14:30 UTC (not on Saturdays) and 21:30
-UTC every day, and on Saturdays at 15:00 UTC (the weekend run).
+UTC every day, and on Saturdays at 15:00 UTC (the weekend run). A **fast lane** runs on weekdays
+every 15 minutes from 11:07 to 21:52 UTC, checking only sources marked `fast = true` in the feeds
+file (BFLY: its press release feed and 8-Ks). Mark only sources that move the price within the day
+and tolerate frequent requests (never Google News). Its reports are named by Pacific time
+(`<TICKER>_<day>_0637.md`) and Claude treats them as `now` runs. All runs share one concurrency
+group; a dropped waiting run loses nothing, since the seen-log is the record.
 
 - **Free check:** `scripts/watch_check.py` reads every `research/*/watch/*_feeds.toml` (RSS,
   Google News RSS, CourtListener, EDGAR 8-K, Form D and earnings filings), filters the results,
@@ -169,6 +174,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\daily_report.ps1
 
 # Watchlist news check (free; the GitHub workflow runs it): print what is new, change nothing
 .\.venv\Scripts\python.exe scripts\watch_check.py BFLY --dry-run
+.\.venv\Scripts\python.exe scripts\watch_check.py BFLY --mode fast --dry-run    # fast lane only
 .\.venv\Scripts\python.exe scripts\watch_check.py BFLY --mode weekend --dry-run  # adds W7
 
 # Path to profitability next to EV/sales: active and peer tickers, or specific ones

@@ -16,6 +16,9 @@
 #   title_must                optional regex the title must match (case-insensitive)
 #   match_titles              de-duplicate on the title as well as the URL (default true;
 #                             false for feeds whose titles repeat, such as a court docket)
+#   fast                      true: also checked every 15 minutes on weekdays around market
+#                             hours (the fast lane). Only for sources that move the price within
+#                             the day and tolerate frequent requests; Google News does not
 #   rss: url | google_news: query (searched over the last 7 days)
 #   sec_8k: ticker, items | sec_form_d: company, cik | sec_earnings: tickers
 #   correlation: ticker, benchmark, window (days, 60), low (0.3), move (0.2); weekend runs only
@@ -59,6 +62,7 @@ name = "Butterfly press releases"
 item = "W1"
 kind = "rss"
 url = "https://ir.butterflynetwork.com/rss/PressRelease.aspx"
+fast = true
 
 [[source]]
 name = "News: Butterfly Network"
@@ -102,6 +106,7 @@ item = "W1"
 kind = "sec_8k"
 ticker = "BFLY"
 items = ["1.01", "7.01", "8.01"]
+fast = true
 
 # ---------------------------------------------------------------- W2 partners
 # A partner title that mentions Butterfly is promoted to W1 (see [promote]).
