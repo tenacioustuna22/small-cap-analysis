@@ -68,7 +68,7 @@ Frame conclusions for both horizons: the multi-year thesis, and the near-term se
 ## Watchlist automation (2026-11-20)
 
 `.github/workflows/watch-check.yml` runs on GitHub at 14:30 UTC (not on Saturdays) and 21:30
-UTC every day, and on Saturdays at 15:00 UTC (the weekend run). A **fast lane** runs on weekdays
+UTC every day, and on Saturdays at 15:17 UTC (the weekend run; off the hour, because GitHub drops on-the-hour runs when busy, as on 2026-11-21). A **fast lane** runs on weekdays
 every 15 minutes from 11:07 to 21:52 UTC, checking only sources marked `fast = true` in the feeds
 file (BFLY: its press release feed and 8-Ks). Mark only sources that move the price within the day
 and tolerate frequent requests (never Google News). Its reports are named by Pacific time

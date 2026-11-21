@@ -1,5 +1,16 @@
 # BFLY scenarios: decisions and to-do
 
+## Before 2026-12-05: two weekend checks Claude can't do (weekend report, 2026-11-21)
+
+- **EDGAR Form D full-text search (W2, monthly).** Claude's step can only use WebFetch, which
+  can't send the `User-Agent` the SEC requires, so efts.sec.gov returns 403. Move the search into
+  `scripts/watch_check.py` (a new source kind, run in weekend mode on the first weekend of the
+  month) so it arrives as waiting items, and drop it from `[[weekend_only]]`.
+- **Court docket (W3, every Saturday).** CourtListener's pages return 403 to Claude, and its
+  search feed has no entry descriptions, so the weekend run can't tell an order from a routine
+  filing. The CourtListener API gives descriptions but needs a free account token. Ask the owner
+  before adding it (a key). Until then, the owner opens the two docket pages by hand.
+
 ## Next up: redesign the daily report (owner, 2026-11-21)
 
 The report pages (`scripts/report.py`) predate the thesis, the scenarios work and the watchlist.

@@ -11,7 +11,7 @@
 #
 # Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR) and CLAUDE_CODE_OAUTH_TOKEN
 # (from `claude setup-token`). Cron is in UTC: 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific
-# in winter, an hour later in summer. Saturday skips 14:30: the 15:00 weekend run covers it.
+# in winter, an hour later in summer. Saturday skips 14:30: the 15:17 weekend run covers it (off the hour: the 15:00 run was dropped on 2026-11-21).
 #
 # Fast lane: on weekdays, every 15 minutes from 11:07 to 21:52 UTC (about 6 am to 5 pm Eastern in
 # winter, an hour later in summer), only sources marked `fast = true` in the feeds files (BFLY's
@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: "30 14 * * 0-5"   # mornings except Saturday: flagged items only
     - cron: "30 21 * * *"     # afternoons: flagged items only
-    - cron: "0 15 * * 6"      # Saturday: weekend run (court docket, no-feed checks, W7)
+    - cron: "17 15 * * 6"      # Saturday: weekend run (court docket, no-feed checks, W7)
     - cron: "7,22,37,52 11-21 * * 1-5"  # weekdays: fast lane (fast = true sources only)
   workflow_dispatch:
     inputs:
@@ -63,7 +63,7 @@ jobs:
         id: mode
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then mode="${{ inputs.mode }}"
-          elif [ "${{ github.event.schedule }}" = "0 15 * * 6" ]; then mode=weekend
+          elif [ "${{ github.event.schedule }}" = "17 15 * * 6" ]; then mode=weekend
           elif [ "${{ github.event.schedule }}" = "7,22,37,52 11-21 * * 1-5" ]; then mode=fast
           else mode=now; fi
           if [ "$mode" = weekend ]; then slot=weekend
