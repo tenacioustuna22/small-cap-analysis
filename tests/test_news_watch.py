@@ -83,7 +83,7 @@ def test_html_page_is_not_a_feed():
 
 
 def test_the_bfly_feeds_file_loads():
-    cfg = nw.load_config(ROOT / "research" / "BFLY_feeds.toml")
+    cfg = nw.load_config(ROOT / "research" / "BFLY" / "watch" / "BFLY_feeds.toml")
     assert cfg.ticker == "BFLY"
     assert cfg.baseline_date == date(2026, 11, 18)
     assert {s["item"] for s in cfg.sources} == {"W1", "W2", "W3", "W4", "W5", "W6", "W7"}
@@ -91,7 +91,7 @@ def test_the_bfly_feeds_file_loads():
 
 
 def test_bfly_blocklist_drops_noise_and_keeps_news():
-    cfg = nw.load_config(ROOT / "research" / "BFLY_feeds.toml")
+    cfg = nw.load_config(ROOT / "research" / "BFLY" / "watch" / "BFLY_feeds.toml")
     blocked = [
         "Butterfly Network falls 6.58% in Thursday's session",
         "Butterfly Network, Inc. (BFLY) stock price, news, quote and history",

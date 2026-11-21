@@ -1,5 +1,5 @@
 # Feeds for the free watchlist check (scripts/watch_check.py), read twice a day by
-# .github/workflows/watch-check.yml. Items refer to research/BFLY_watch.md (W1-W7).
+# .github/workflows/watch-check.yml. Items refer to research/BFLY/BFLY_watch.md (W1-W7).
 #
 # Top level
 #   ticker, baseline_date     entries published before baseline_date are ignored
@@ -36,7 +36,7 @@ blocked_domains = [
   "marketscreener.com", "otcmarkets.com", "tradersunion.com", "globalbankingandfinance.com",
   "tipranks.com", "insidermonkey.com", "defenseworld.net", "etfdailynews.com",
   "americanbankingnews.com", "tickerreport.com", "investorsobserver.com", "stockstory.org",
-  "felloai.com",
+  "felloai.com", "stockinvest.us",
 ]
 blocked_titles = [
   'stock price, news, quote',
@@ -77,6 +77,8 @@ name = "News: Butterfly Embedded"
 item = "W1"
 kind = "google_news"
 query = '"Butterfly Embedded"'
+# Google News matches the phrase loosely in article bodies (2026-11-21: a steganography article).
+title_must = 'Butterfly|ultrasound'
 
 [[source]]
 name = "News: Poseidon chip"

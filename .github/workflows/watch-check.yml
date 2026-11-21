@@ -1,21 +1,22 @@
 # Watchlist check: a free feed check twice a day, and Claude reports only when it finds something.
 #
-# 1. scripts/watch_check.py reads research/<TICKER>_feeds.toml (no Claude usage) and logs new
-#    items in research/<TICKER>_seen.csv.
+# 1. scripts/watch_check.py reads research/<TICKER>/watch/<TICKER>_feeds.toml (no Claude usage)
+#    and logs new items in research/<TICKER>/watch/<TICKER>_seen.csv.
 # 2. If anything is waiting, it opens an issue labelled "watch", and Claude (Opus, on the owner's
 #    subscription) follows research/watch_agent_prompt.md and writes
-#    research/watch_reports/<TICKER>_<day>_<am|pm|weekend>.md.
+#    research/<TICKER>/watch/reports/<TICKER>_<day>_<am|pm|weekend>.md.
 # 3. The report is posted as a comment on the issue, the items are marked reported and
 #    everything is committed.
 #
 # Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR) and CLAUDE_CODE_OAUTH_TOKEN
 # (from `claude setup-token`). Cron is in UTC: 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific
-# in winter, an hour later in summer.
+# in winter, an hour later in summer. Saturday skips 14:30: the 15:00 weekend run covers it.
 name: Watchlist check
 
 on:
   schedule:
-    - cron: "30 14,21 * * *"  # twice a day: flagged items only
+    - cron: "30 14 * * 0-5"   # mornings except Saturday: flagged items only
+    - cron: "30 21 * * *"     # afternoons: flagged items only
     - cron: "0 15 * * 6"      # Saturday: weekend run (court docket, no-feed checks, W7)
   workflow_dispatch:
     inputs:
@@ -71,7 +72,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in research/*_seen.csv research/*_watch_state.json; do [ ! -e "$f" ] || git add "$f"; done
+          for f in research/*/watch/*_seen.csv research/*/watch/*_watch_state.json; do [ ! -e "$f" ] || git add "$f"; done
           if ! git diff --cached --quiet; then
             git commit -m "Watch check ${{ steps.mode.outputs.day }} ${{ steps.mode.outputs.slot }}: log new items"
             git pull --rebase && git push
@@ -99,7 +100,7 @@ jobs:
             Mode: ${{ steps.mode.outputs.mode }}
             Tickers: ${{ steps.check.outputs.tickers }}
             Waiting items: watch_out/issue.md
-            Report file for each ticker: research/watch_reports/<TICKER>_${{ steps.mode.outputs.day }}_${{ steps.mode.outputs.slot }}.md
+            Report file for each ticker: research/<TICKER>/watch/reports/<TICKER>_${{ steps.mode.outputs.day }}_${{ steps.mode.outputs.slot }}.md
           claude_args: >-
             --model opus
             --max-turns 40
@@ -114,7 +115,7 @@ jobs:
           : > watch_out/comment.md
           missing=""
           for t in ${{ steps.check.outputs.tickers }}; do
-            f="research/watch_reports/${t}_${day}_${slot}.md"
+            f="research/${t}/watch/reports/${t}_${day}_${slot}.md"
             if [ -f "$f" ]; then
               cat "$f" >> watch_out/comment.md
               printf '\n\nFile: https://github.com/${{ github.repository }}/blob/main/%s\n\n' "$f" >> watch_out/comment.md
@@ -135,7 +136,7 @@ jobs:
           if [ -n "$reported" ]; then
             python scripts/watch_check.py $reported --mode ${{ steps.mode.outputs.mode }} --mark-reported
           fi
-          for f in research/watch_reports research/*_seen.csv; do [ ! -e "$f" ] || git add "$f"; done
+          for f in research/*/watch/reports research/*/watch/*_seen.csv; do [ ! -e "$f" ] || git add "$f"; done
           if ! git diff --cached --quiet; then
             git commit -m "Watch report $day $slot:${reported:- none}"
             git pull --rebase && git push

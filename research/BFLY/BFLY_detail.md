@@ -7,7 +7,7 @@ Prices are as of 2026-11-13 ($6.08). Figures come from SEC filings unless marked
 - **(unverified)**: from outside the filings, such as call summaries or the owner's reading. Check
   it before relying on it.
 
-The action list is in [TODO.md](../TODO.md).
+The action list is in [TODO.md](../../TODO.md).
 
 ## The short version
 
@@ -566,6 +566,18 @@ brain interfaces and for Midjourney's scanner. Piezoelectric transducers can't f
 - **Competition:**
   - Exo Imaging makes a piezoelectric chip (PMUT, 4,096 elements). It has raised over $300M, and
     Samsung Medison invested in 2025.
+  - **Exo's Gates Foundation grant** (watch report 2026-11-20 pm, approved 2026-11-21):
+    $11,594,471, committed September 2026 over 28 months, announced 2026-11-19. It funds a
+    low-cost, AI-enabled point-of-care ultrasound platform for non-expert health workers in low-
+    and middle-income countries. That competes with Core in global health, not with Embedded.
+    - The release says the platform is being built for handheld ultrasound **and "OEM-integrated
+      systems"**. That is the first primary-source hint that Exo may sell its chip into other
+      companies' devices, which is the W5 "Exo licensing its chip" trigger. It is not met: no
+      licensee or OEM partner is named, and brain interfaces aren't mentioned.
+    - Its first Gates grant was $1,000,000 in April 2025, over 12 months.
+    - Sources: [grant record 2026](https://www.gatesfoundation.org/about/committed-grants/2026/10/inv-100015),
+      [Business Wire via FinancialContent, 2026-11-19](https://www.financialcontent.com/article/bizwire-2026-11-19-exo-receives-116-million-grant-to-expand-access-to-ai-powered-ultrasound),
+      [grant record 2025](https://www.gatesfoundation.org/about/committed-grants/2025/04/inv-084044).
   - Chinese ultrasound BCI companies (Gestala, Sisun) are unlikely to buy from a US supplier
     (InsideBCI).
 - **Merge's exclusivity runs one way.** Merge uses only Butterfly for chip ultrasound, and Butterfly
@@ -647,6 +659,22 @@ Form D limits:
 
 **Not built yet** (see TODO): a script and report section for big tech capex from EDGAR, Form D
 filings for the BCI companies, and the correlation gauge.
+
+**Moved here from `BFLY.md` (2026-11-21), when its "What to watch" section became a pointer to
+`BFLY_status.md`.** These points were in that section and not elsewhere:
+- **Watch deal size more than deal count.** Holding today's price needs Midjourney-sized deals
+  (see "What today's price needs" in `BFLY.md`). Also watch Embedded revenue and RPO in each 10-Q.
+- **Midjourney is not funded by venture money:** it pays from its own subscriptions (unverified).
+  Its risk is competition in image generation, not the venture cycle. Layer 2 matters for where the
+  *next* Midjourney comes from.
+- **For each new Embedded deal, record:** the date, partner and field; how the partner is funded;
+  the size, where disclosed (the deal log in `TODO.md`).
+- **The two signals agreeing:** if big tech's 2027 capex guidance and BFLY's 2027 revenue guidance
+  (against the $150.2M consensus and our $132M base) both disappoint in January-February 2027, the
+  two point the same way.
+- The live checks of all of this are now automated: `BFLY_watch.md` (W1-W7) and the workflow in
+  `.github/workflows/watch-check.yml`. Big tech capex (W6) and the ARKK correlation (W7) are
+  covered there, though not yet as a report section.
 
 ## Embedded without Midjourney (estimate, 2026-11-16)
 

@@ -1,8 +1,21 @@
 # BFLY scenarios: decisions and to-do
 
+## Readability (owner, 2026-11-21)
+
+Done 2026-11-21. The owner's view of where things stand is now
+[research/BFLY/BFLY_status.md](research/BFLY/BFLY_status.md). It has one row per watch item, recent
+changes and the coming dates, and is updated with the baselines.
+- **New layout:** BFLY's files are in `research/BFLY/`, and the automation's files (feeds,
+  seen-log, state, reports) are in `research/BFLY/watch/`.
+- **`BFLY.md`:** "What to watch" became a pointer. The points found nowhere else moved to
+  `BFLY_detail.md`, "What to watch for AI conditions".
+- **Not trimmed:** `BFLY_detail.md` and this file. Revisit them if they get in the way.
+
+## Scenario work
+
 Working list for writing BFLY's bear/base/bull cases into `assumptions.toml`.
 Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these decisions is in
-[research/BFLY_detail.md](research/BFLY_detail.md).
+[research/BFLY/BFLY_detail.md](research/BFLY/BFLY_detail.md).
 
 ## Decided
 
@@ -35,7 +48,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
      one new deal a year at about $12M, and small royalties.
    - 2027 leans toward management's "space we are in now" (about $44M). Later years follow the
      measured signing rate.
-   - The pieces are in research/BFLY_detail.md.
+   - The pieces are in research/BFLY/BFLY_detail.md.
 1. (merged into 0)
 2. Done 2026-11-15: Embedded bull path 53, 50, 54, 61, 68. It is the base pieces plus:
    - more milestones and hardware
@@ -58,7 +71,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
    - in the bear, -5 for receivables not collected or litigation not covered
    - capex (-4).
 
-   The breakdown is in research/BFLY_detail.md.
+   The breakdown is in research/BFLY/BFLY_detail.md.
 5. Done 2026-11-16: breakeven never / never / 3 years; raise discount 75% / 50% / 10%.
    - Burn was rolled forward year by year, and each straight-line setting was picked to match.
    - Base never breaks even on its own revenue.
@@ -76,13 +89,13 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
 
 ## Parked (come back to these, don't let them stall the list above)
 
-- **Embedded deal log** (from the 2026-11-18 hypothesis in `research/BFLY.md`): one row per
+- **Embedded deal log** (from the 2026-11-18 hypothesis in `research/BFLY/BFLY.md`): one row per
   partner. Fields:
   - date announced, partner, field
   - how the partner is funded (latest round, investors)
   - deal size where disclosed, and the source.
 
-  Start from the partner table in `research/BFLY_detail.md`, then BFLY's 8-Ks and press
+  Start from the partner table in `research/BFLY/BFLY_detail.md`, then BFLY's 8-Ks and press
   releases. This is how to test whether signings follow AI and neurotech funding.
 - **AI-conditions watch script and report section** (not built). It needs no new data source:
   - big tech capex, actual and guided, from EDGAR XBRL
@@ -90,7 +103,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
     Synchron, Precision)
   - BFLY's rolling 60-day correlation with ARKK and SMH, from yfinance.
 
-  The design is in `research/BFLY_detail.md`, "What to watch for AI conditions".
+  The design is in `research/BFLY/BFLY_detail.md`, "What to watch for AI conditions".
 
 - Check the Midjourney scanner and spa details against official sources, then add the spa
   opening to `catalysts.csv`. Details to check: announced June 2026, at 300 Grant Avenue,
@@ -138,7 +151,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
   Merge Labs (deal announced 2026-09-01; upfront and milestone license payments, hardware purchase
   commitments, access fees). That is an inference. No 8-K item 1.01 was filed for Merge, unlike
   Midjourney, so BFLY did not treat it as a material agreement.
-- Done 2026-11-15: checked against the Investing.com Q3 transcript; details in research/BFLY_detail.md.
+- Done 2026-11-15: checked against the Investing.com Q3 transcript; details in research/BFLY/BFLY_detail.md.
   The wording differs slightly: "live in the space that we are in now ... carry that on into 2027".
   Management quotes to verify in a transcript before citing them:
   - The CFO said Embedded should hold "near this level into 2027".
@@ -166,7 +179,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
 - Page line (include it, no longer optional): what today's price implies, for example the 2030
   revenue needed at the peer multiples. Today's price is above our bull case.
 - Done 2026-11-16: what everyone says about Embedded, and Embedded without Midjourney (estimate).
-  Both are in research/BFLY_detail.md.
+  Both are in research/BFLY/BFLY_detail.md.
   - Outside Midjourney, Embedded was about $1M a quarter in 2025, mostly Forest.
   - It was about $4.5-6M in Q3 2026, mostly Merge Labs' signing.
   - The base case assumes the rest of Embedded about doubles in 2027.
@@ -177,13 +190,13 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
   check the replays on BFLY's investor relations site.
 - Find the bull argument: what management pitched about the platform, and what analysts cite.
   Read the Q4 2025, Q1 2026 and Q2 2026 call transcripts. Analyst targets are $10-15 (Yahoo,
-  2026-11-13). Hypotheses are in research/BFLY_detail.md, "What the market is pricing". If something
+  2026-11-13). Hypotheses are in research/BFLY/BFLY_detail.md, "What the market is pricing". If something
   real turns up, revisit the bull case.
-- Management track record (research/BFLY_detail.md):
+- Management track record (research/BFLY/BFLY_detail.md):
   - Confirm "$550M" on the Q3 2026 call replay. The only written target is "over $500 million"
     (investor day, 2024-03-19).
   - Compare the 2020-21 SPAC merger projections (Longview proxy) with actual results.
-- Done 2026-11-16: the fall from the September peak. Details are in research/BFLY_detail.md, "The fall from the
+- Done 2026-11-16: the fall from the September peak. Details are in research/BFLY/BFLY_detail.md, "The fall from the
   September peak". Watch:
   - How much of the $150M ATM (filed 2026-10-29) has been sold. Check the next cover-page share
     count and the 2026 10-K.
@@ -196,7 +209,7 @@ Started 2026-11-15. Prices as of 2026-11-13 ($6.08). The research behind these d
   - The path to profitability: section, comparison table and `scripts\profitability.py`.
   - The forward multiple (EV / next year's consensus sales).
 
-  Neither closes BFLY's premium over the comparison companies (research/BFLY_detail.md).
+  Neither closes BFLY's premium over the comparison companies (research/BFLY/BFLY_detail.md).
 - Next:
   - Growth speeding up (latest quarter's growth against a year earlier), across the companies.
   - Then rebuild the scenario burn from costs, one decision at a time. Start with gross margin per

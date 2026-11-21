@@ -15,10 +15,10 @@ reads it to decide whether anything changes the thesis. Be short, sourced and pl
 
 ## Read first, for each ticker
 
-1. `research/<TICKER>_watch.md`. It holds the thesis, each item's baseline and what counts as
+1. `research/<TICKER>/<TICKER>_watch.md`. It holds the thesis, each item's baseline and what counts as
    significant, the rules for numbers, and the **report format you must use**.
 2. The waiting-items file.
-3. Only if you need background: `research/<TICKER>.md` (the summary).
+3. Only if you need background: `research/<TICKER>/<TICKER>.md` (the summary).
 
 ## What to do with each waiting item
 
@@ -52,11 +52,11 @@ In addition to the waiting items:
 - **Court docket entries** (the source named "Court docket"): read the docket page once, not each
   entry. Report only orders, rulings, a settlement, a trial date or a dismissal. Skip routine
   filings in one line ("12 routine filings").
-- **`[[weekend_only]]` checks** in `research/<TICKER>_feeds.toml`. These sources have no working
-  free feed. Check each one. If you can't, say so under "Could not check".
-- **Repeated failures:** any source in `research/<TICKER>_watch_state.json` under `failures` with
-  `count` 3 or more. The free check has failed on it several times in a row, so check it by hand
-  and say so.
+- **`[[weekend_only]]` checks** in `research/<TICKER>/watch/<TICKER>_feeds.toml`. These sources
+  have no working free feed. Check each one. If you can't, say so under "Could not check".
+- **Repeated failures:** any source in `research/<TICKER>/watch/<TICKER>_watch_state.json` under
+  `failures` with `count` 3 or more. The free check has failed on it several times in a row, so
+  check it by hand and say so.
 - **W7:** report the correlation stored under `correlation` in the state file, with its window
   dates, on the first weekend of each month or whenever it is among the waiting items. Don't
   compute it yourself.
@@ -69,7 +69,7 @@ In addition to the waiting items:
 - **No buy or sell advice.** Say which part of the thesis a finding supports or weakens.
 - **If you could not check something,** say so and why. Never skip silently.
 - **Write only the report files** named in the prompt. Don't edit the watchlist, its baselines,
-  the seen-log, the state file or any code. The workflow marks items reported, and the owner
+  the status page (`<TICKER>_status.md`), the seen-log, the state file or any code. The workflow marks items reported, and the owner
   updates baselines after checking your findings.
 - Use the report format in `<TICKER>_watch.md` exactly. Put a one-line summary at the very top,
   above the format, for the phone notification, for example: `BFLY: 1 significant (W2 Merge Labs

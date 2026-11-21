@@ -2,7 +2,7 @@
 
 Pure functions and local file handling only; network fetching lives in src/feeds.py, and
 scripts/watch_check.py runs both. The config format is explained at the top of
-research/BFLY_feeds.toml.
+research/BFLY/watch/BFLY_feeds.toml.
 """
 from __future__ import annotations
 

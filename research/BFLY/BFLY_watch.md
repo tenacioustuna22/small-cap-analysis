@@ -6,19 +6,19 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 **How the checking is automated:**
 
 - **The free check:** twice a day, `scripts/watch_check.py` reads the news feeds and EDGAR queries
-  in `research/BFLY_feeds.toml`. It logs anything new in `research/BFLY_seen.csv` and uses no
-  Claude.
+  in `research/BFLY/watch/BFLY_feeds.toml`. It logs anything new in
+  `research/BFLY/watch/BFLY_seen.csv` and uses no Claude.
 - **Claude's report:** when the free check finds something, Claude follows
   `research/watch_agent_prompt.md`, judges the items against this file, and writes a report in
-  `research/watch_reports/`. The report is posted to a GitHub issue labelled `watch`.
+  `research/BFLY/watch/reports/`. The report is posted to a GitHub issue labelled `watch`.
 - **Saturdays:** Claude also covers the court docket, the checks with no free feed, and W7.
 - **The workflow** is `.github/workflows/watch-check.yml`.
 
 - **This file:**
-  <https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis/main/research/BFLY_watch.md>
+  <https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis/main/research/BFLY/BFLY_watch.md>
 - **Background, if needed:** the summary
-  <https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis/main/research/BFLY.md>.
-  The full notes are `research/BFLY_detail.md` in the same repo.
+  <https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis/main/research/BFLY/BFLY.md>.
+  The full notes are `research/BFLY/BFLY_detail.md` in the same repo.
 
 ## Rules
 
@@ -26,7 +26,7 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
    is secondary (news, aggregator), label it **(unverified)**.
 2. **Only report what is newer than the baseline.** If a finding repeats the baseline, leave it
    out. If it conflicts with the baseline, report the conflict and both sources. Rows in
-   `research/BFLY_seen.csv` marked `reported`, `baselined` or `dismissed` have already been
+   `research/BFLY/watch/BFLY_seen.csv` marked `reported`, `baselined` or `dismissed` have already been
    reported; don't report them again.
 3. **If you could not check an item,** say so and why (page wouldn't load, no access). Don't skip
    it silently.
@@ -212,6 +212,15 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
   - **Exo Imaging:** a piezoelectric ultrasound chip with 4,096 elements, over $300M raised, and a
     Samsung Medison investment in May 2025 ([Pulse 2.0](https://pulse2.com/exo-imaging-35-million/);
     unverified).
+    - **Gates Foundation grant** (recorded 2026-11-21): $11,594,471 committed in September 2026,
+      over 28 months, announced 2026-11-19. It is for a low-cost, AI-enabled point-of-care
+      ultrasound platform for non-expert health workers in low- and middle-income countries
+      ([grant record](https://www.gatesfoundation.org/about/committed-grants/2026/10/inv-100015)).
+      The release says the platform is being developed for handheld ultrasound and
+      "OEM-integrated systems", but names no licensee or OEM partner and mentions no brain-interface
+      use ([Business Wire via FinancialContent](https://www.financialcontent.com/article/bizwire-2026-11-19-exo-receives-116-million-grant-to-expand-access-to-ai-powered-ultrasound)).
+      Its earlier Gates grant was $1,000,000 in April 2025, over 12 months
+      ([grant record](https://www.gatesfoundation.org/about/committed-grants/2025/04/inv-084044)).
 - **Significant:**
   - a brain-interface or imaging company choosing Exo or another chip over Butterfly's
   - Exo licensing its chip to third parties
@@ -309,6 +318,6 @@ Leave out a section that would be empty, except "Nothing new" and "Could not che
 When the owner brings a report back to the stock-analysis project:
 
 - the findings are checked and added to the research notes
-- the baselines in this file are updated
-- the matching rows in `BFLY_seen.csv` are set to `baselined` or `dismissed`
+- the baselines in this file are updated, and so is the owner's status page, `BFLY_status.md`
+- the matching rows in `watch/BFLY_seen.csv` are set to `baselined` or `dismissed`
 - the `watch` issue is closed.

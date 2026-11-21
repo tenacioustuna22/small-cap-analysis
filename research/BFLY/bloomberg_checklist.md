@@ -103,4 +103,4 @@ For Microsoft, Alphabet, Amazon, Meta and Oracle (`MSFT US`, `GOOGL US`, `AMZN U
 ## Bring back
 
 For each item: what you found, the date of the figure, and where on Bloomberg. We'll check it
-against what we have and add it to `research/BFLY_detail.md` and the deal log in `TODO.md`.
+against what we have and add it to `research/BFLY/BFLY_detail.md` and the deal log in `TODO.md`.

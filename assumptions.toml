@@ -34,7 +34,7 @@
 
 # ---------------------------------------------------------------------------------------
 # BFLY: decided with the owner 2026-11-15/16. Evidence and the reasoning for every number are
-# in research/BFLY.md ("Scenario decisions so far", "Cash, burn and dilution"). Year 1 = 2027.
+# in research/BFLY/BFLY.md ("Scenario decisions so far", "Cash, burn and dilution"). Year 1 = 2027.
 # Revisit after the 2026 10-K (late Feb 2027): Core's four-quarter start, Midjourney's
 # remaining contracted revenue, and Q4 2026 burn.
 # ---------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ Management's "cash flow positive in 2028" needs revenue near its own plan.""",
   """Values are not discounted to today, count no cash earned after breakeven, and leave out 19.3M \
 potential shares from options and warrants.""",
   """Today's price is above even the bull case. The market is pricing something these cases leave \
-out, such as management's plan or a wider platform view of Embedded. See research/BFLY.md, \
+out, such as management's plan or a wider platform view of Embedded. See research/BFLY/BFLY.md, \
 "What the market is pricing".""",
   """Not in any path: Midjourney stopping payment (possible only through breach or insolvency), the \
 SPAC-era class action ($14.3M accrued, $13.7M expected from insurance) if insurance falls short, \

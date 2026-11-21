@@ -1,8 +1,9 @@
-"""Free watchlist check: read the feeds in research/<TICKER>_feeds.toml, log anything new.
+"""Free watchlist check: read the feeds in research/<TICKER>/watch/<TICKER>_feeds.toml, log
+anything new.
 
-New items go into research/<TICKER>_seen.csv with status "new". Claude reports on them in the
-GitHub workflow (.github/workflows/watch-check.yml), then this script marks them "reported".
-No Claude usage happens here.
+New items go into research/<TICKER>/watch/<TICKER>_seen.csv with status "new". Claude reports on
+them in the GitHub workflow (.github/workflows/watch-check.yml), then this script marks them
+"reported". No Claude usage happens here.
 
 Usage:
     python scripts/watch_check.py                      every ticker with a feeds file
@@ -33,15 +34,16 @@ RAW_BASE = "https://raw.githubusercontent.com/tenacioustuna22/small-cap-analysis
 
 
 def paths(ticker: str) -> dict[str, Path]:
+    watch = RESEARCH / ticker / "watch"
     return {
-        "feeds": RESEARCH / f"{ticker}_feeds.toml",
-        "seen": RESEARCH / f"{ticker}_seen.csv",
-        "state": RESEARCH / f"{ticker}_watch_state.json",
+        "feeds": watch / f"{ticker}_feeds.toml",
+        "seen": watch / f"{ticker}_seen.csv",
+        "state": watch / f"{ticker}_watch_state.json",
     }
 
 
 def all_tickers() -> list[str]:
-    return sorted(p.name.removesuffix("_feeds.toml") for p in RESEARCH.glob("*_feeds.toml"))
+    return sorted(p.name.removesuffix("_feeds.toml") for p in RESEARCH.glob("*/watch/*_feeds.toml"))
 
 
 def notify_for(mode: str) -> tuple[str, ...]:
@@ -163,7 +165,9 @@ def write_output(key: str, value: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Free watchlist news check.")
-    parser.add_argument("tickers", nargs="*", help="tickers (default: every research/*_feeds.toml)")
+    parser.add_argument(
+        "tickers", nargs="*", help="tickers (default: every research/*/watch/*_feeds.toml)"
+    )
     parser.add_argument("--mode", choices=("now", "weekend"), default="now")
     parser.add_argument("--dry-run", action="store_true", help="print only; change no files")
     parser.add_argument("--issue-body", type=Path, help="write the GitHub issue text here")
@@ -173,7 +177,7 @@ def main() -> int:
 
     tickers = [t.upper() for t in args.tickers] or all_tickers()
     if not tickers:
-        print("No research/*_feeds.toml files found.")
+        print("No research/*/watch/*_feeds.toml files found.")
         return 1
 
     if args.mark_reported:
@@ -192,7 +196,7 @@ def main() -> int:
         waiting, failures = check(ticker, args.mode, args.dry_run, today)
         if waiting or args.mode == "weekend":
             with_items.append(ticker)
-            watch_url = f"{RAW_BASE}/{ticker}_watch.md"
+            watch_url = f"{RAW_BASE}/{ticker}/{ticker}_watch.md"
             bodies.append(news_watch.render_issue(ticker, waiting, failures, args.mode, watch_url))
 
     if args.issue_body and bodies:

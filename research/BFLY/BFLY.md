@@ -1,60 +1,19 @@
 # BFLY: Butterfly Network
 
-Updated 2026-11-18. Price $5.71 (close 2026-11-16). Working, derivations and every source:
-[BFLY_detail.md](BFLY_detail.md). Open items: [TODO.md](../TODO.md). **(estimate)** marks our own
-arithmetic; **(unverified)** marks anything from outside the filings.
+Updated 2026-11-18 ("Where things stand" 2026-11-21). Price $5.71 (close 2026-11-16). Working,
+derivations and every source: [BFLY_detail.md](BFLY_detail.md). Open items:
+[TODO.md](../../TODO.md). **(estimate)** marks our own arithmetic; **(unverified)** marks anything
+from outside the filings.
 
-## What to watch, and how it feeds Embedded
+## Where things stand
 
-The checklist a separate Claude project uses to look for news is
-[BFLY_watch.md](BFLY_watch.md).
-
-BFLY's premium rests on Embedded, the program that licenses its ultrasound chip to other
-companies. The companies signing are AI and brain-interface firms, so their money is what to watch.
-The list runs from the most direct link to the least:
-
-1. **Neurotech funding: the most direct link.**
-   - Brain-interface companies need it to sign deals and pay milestones. These are Merge Labs,
-     Bridge Neurotech, Forest Neurotech, a partner still in stealth, and future partners.
-   - Merge raised a $252M seed (OpenAI, Bain Capital and others). Bridge raised $13.5M, so it can't
-     pay much.
-   - Where to look:
-     - partners' **Form D** filings on EDGAR (filed when raising private money; some file late or
-       leave amounts blank)
-     - funding news for brain-interface peers: Neuralink, Synchron and Precision.
-2. **Venture funding for AI applications: where the next Midjourney comes from.**
-   - Midjourney itself pays from its own subscriptions (unverified). Its risk is competition in image
-     generation, not venture funding.
-   - Where to look: the free PitchBook-NVCA Venture Monitor summary and Crunchbase News (quarterly,
-     about a month's lag). Also large AI raises, and whether AI IPOs get done.
-3. **The AI spending cycle: the early warning, not a direct driver.**
-   - It sets the mood that funds the two layers above.
-   - What to read:
-     - Big tech capex, actual and guided (Microsoft, Alphabet, Amazon, Meta, Oracle).
-     - Cloud revenue growth against that capex.
-     - Nvidia data-center revenue.
-     - ARKK and SMH.
-   - It can boom while neurotech funding dries up, or the reverse.
-4. **BFLY's own deal log: where all of it shows up.** For each new Embedded deal, record:
-   - the date, partner and field
-   - how the partner is funded
-   - the size, where disclosed.
-
-   **Watch deal size more than deal count.** Holding $5.71 needs Midjourney-sized deals (see
-   "What today's price needs"). Also watch Embedded revenue and contracted revenue (RPO) in each
-   10-Q.
-5. **One gauge: BFLY's 60-day correlation with ARKK.**
-   - It was +0.38 from April to the peak and +0.72 since.
-   - **While it stays high,** BFLY trades as an AI stock, so weight layers 1-3.
-   - **If it falls back to 0.2-0.3,** BFLY is trading on its own news again.
-
-**Coming dates:**
-- **January-February 2027:** big tech's 2027 capex guidance, and BFLY's 2027 revenue guidance
-  against the $150.2M consensus and our $132M base. If both disappoint together, the two signals
-  agree.
-- **About late February 2027:** the 2026 10-K.
-- **End of 2027:** Midjourney's first scanner spa, in San Francisco. That is the stated date; the
-  owner expects it nearer 2029.
+- **The current state of each thing we watch** (deals, partner funding, Midjourney, sector money,
+  peers, AI capex, the ARKK correlation), with the latest changes and the next dates:
+  [BFLY_status.md](BFLY_status.md).
+- **What is checked, where, and what counts as significant:** [BFLY_watch.md](BFLY_watch.md).
+  The checks run automatically twice a day; reports arrive as GitHub issues labelled `watch`.
+- **Why these things are watched** (the layers from BFLY's own deals out to the AI spending cycle):
+  [BFLY_detail.md](BFLY_detail.md), "What to watch for AI conditions".
 
 ## What would change our mind
 
