@@ -1,0 +1,17 @@
+{
+  "correlation": {
+    "BFLY vs ARKK correlation": {
+      "from": "2026-08-28",
+      "to": "2026-11-20",
+      "value": 0.63,
+      "window": 60
+    }
+  },
+  "failures": {
+    "Court docket: Midjourney cases": {
+      "count": 1,
+      "last_error": "request failed: HTTPSConnectionPool(host='www.courtlistener.com', port=443): Read timed out. (read timeout=30)",
+      "since": "2026-11-21"
+    }
+  }
+}
