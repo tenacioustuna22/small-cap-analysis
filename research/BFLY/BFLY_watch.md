@@ -278,6 +278,7 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 
 | When | What | Why it matters |
 |---|---|---|
+| 2026-12-01, 3:50 pm ET | Fireside chat at the Evercore Healthcare Conference, Miami (CEO, CFO, CAO; webcast on the IR site). [Release, 2026-11-17](https://ir.butterflynetwork.com/News/press-releases/news-details/2026/Butterfly-Network-to-Present-at-9th-Annual-Evercore-Healthcare-Conference-on-December-1-2026/default.aspx) | Any update on Embedded partners, the partner count or new deals (W1) |
 | Late Jan to early Feb 2027 | Big tech Q4 results and capex guidance | W6 early warning |
 | About late Feb 2027 | BFLY Q4 2026 results, 2027 guidance, and the 2026 10-K (the 2025 10-K was filed 2026-02-27) | Guidance against the $150.2M consensus; Midjourney's remaining contracted revenue; ATM shares sold |
 | End of 2027 (stated) | Midjourney's first spa, San Francisco | W3 |

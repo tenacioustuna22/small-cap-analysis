@@ -1,6 +1,6 @@
 # BFLY: where things stand
 
-Updated **2026-11-21**, after the watch reports of 2026-11-20 (am and pm).
+Updated **2026-11-21**, after the watch reports of 2026-11-20 (am and pm) and 2026-11-21 (weekend and pm).
 
 - **Not yet reviewed:** any [open `watch` issue](https://github.com/tenacioustuna22/small-cap-analysis/issues?q=is%3Aissue+is%3Aopen+label%3Awatch).
 - **Sources** for every figure: [BFLY_watch.md](BFLY_watch.md), under the same W item. A **\***
@@ -31,6 +31,8 @@ device makers. No customer has been named.
 
 ## Recent changes, newest first
 
+- **2026-11-17, W1:** Butterfly will present at the Evercore Healthcare Conference on 2026-12-01.
+  Neutral: a conference notice, with no deal or financial news.
 - **2026-11-19, W5:** Exo's Gates grant and the "OEM-integrated systems" wording. Neutral, leaning
   weaker: it competes with Core in global health, and no chip customer has been named yet.
 - **2026-11-19, W2:** Sonic Incytes and Madrigal sign a deal for liver assessment. Neutral, or
@@ -45,6 +47,7 @@ device makers. No customer has been named.
 
 | When | What | Item |
 |---|---|---|
+| 2026-12-01, 3:50 pm ET | Fireside chat at the Evercore Healthcare Conference (webcast on the IR site): listen for Embedded partner news | W1 |
 | Every Saturday | Weekend check: court docket, Midjourney's blog; the ARKK correlation monthly | W3, W7 |
 | About late Jan 2027 | PitchBook-NVCA Q4 report | W4 |
 | Late Jan to early Feb 2027 | Big tech Q4 results and the first 2027 capex guidance | W6 |
