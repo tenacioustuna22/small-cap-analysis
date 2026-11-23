@@ -76,7 +76,8 @@ and tolerate frequent requests (never Google News). Its reports are named by Pac
 group; a dropped waiting run loses nothing, since the seen-log is the record.
 
 - **Free check:** `scripts/watch_check.py` reads every `research/*/watch/*_feeds.toml` (RSS,
-  Google News RSS, CourtListener, EDGAR 8-K, Form D and earnings filings), filters the results,
+  Google News RSS, EDGAR 8-K, Form D and earnings filings, EDGAR full-text search with Form D
+  amounts, and CourtListener docket entries through its API), filters the results,
   and appends new items to `research/<TICKER>/watch/<TICKER>_seen.csv`. The status column runs
   `new`, then `reported`, then `baselined` or `dismissed`. Source failures and the W7 correlation
   go in `research/<TICKER>/watch/<TICKER>_watch_state.json`. Pure logic lives in
@@ -88,9 +89,15 @@ group; a dropped waiting run loses nothing, since the seen-log is the record.
   - The report goes to `research/<TICKER>/watch/reports/<TICKER>_<day>_<am|pm|weekend>.md` and
     is posted on the issue.
   - Items are then marked `reported`. A failed report leaves them `new` for the next run.
-- **Saturday:** the run also covers `notify = "weekend"` sources (the court docket), the
-  `[[weekend_only]]` checks with no free feed, and the W7 correlation.
-- **Repo secrets:** `SEC_USER_AGENT` and `CLAUDE_CODE_OAUTH_TOKEN`.
+- **Saturday:** the run also covers `notify = "weekend"` sources (routine court docket entries;
+  rulings are sent the same day), any `[[weekend_only]]` checks with no free feed, and the W7
+  correlation.
+- **What Claude can't reach:** in the workflow Claude has only web tools, which can't send the
+  SEC's `User-Agent` and are refused by Cloudflare and CourtListener's pages. Anything from those
+  sites has to be fetched by the free check and handed over in the waiting items. Don't try to
+  get past a site's bot blocking (from GitHub or the owner's PC); use its API or drop the check.
+- **Repo secrets:** `SEC_USER_AGENT`, `COURTLISTENER_TOKEN` (a free CourtListener account's API
+  token, 125 requests a day; also in `.env` for local runs) and `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Data sources (free only)
 

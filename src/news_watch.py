@@ -29,6 +29,8 @@ KIND_KEYS = {
     "sec_8k": {"ticker", "items"},
     "sec_form_d": {"company", "cik"},
     "sec_earnings": {"tickers"},
+    "sec_fulltext": {"queries", "forms"},
+    "courtlistener": {"dockets"},
     "correlation": {"ticker", "benchmark", "window", "weekday", "low", "move"},
 }
 TOP_KEYS = {"ticker", "baseline_date", "promote", "filters", "source", "weekend_only"}
@@ -103,6 +105,10 @@ def load_config(path: Path) -> Config:
         missing = KIND_KEYS[kind] - set(source) - {"window", "weekday", "low", "move"}
         if missing:
             raise ConfigError(f"{path.name}: source '{name}' is missing {sorted(missing)}")
+        if kind == "courtlistener" and not all(
+            isinstance(d, dict) and isinstance(d.get("id"), int) and d.get("name") for d in source["dockets"]
+        ):
+            raise ConfigError(f"{path.name}: source '{name}' dockets must be {{ id = 123, name = \"...\" }}")
         if not re.fullmatch(r"W\d+", source.get("item", "")):
             raise ConfigError(f"{path.name}: source '{name}' needs item = \"W1\" (or W2, ...)")
         source.setdefault("notify", "now")
@@ -179,6 +185,95 @@ def parse_feed(xml_text: str) -> list[Entry]:
             entries.append(Entry(title, link, _parse_date(when), _domain(link)))
     else:
         raise ValueError(f"not an RSS or Atom feed (root element {root.tag})")
+    return entries
+
+
+@dataclass(frozen=True)
+class EftsHit:
+    """One filing from an EDGAR full-text search answer."""
+    form: str
+    filed: date
+    filer: str
+    index_url: str
+    document_url: str
+
+
+def efts_hits(response: dict, since: date) -> list[EftsHit]:
+    """Filings in an efts.sec.gov search answer, filed on or after `since`, one per filing."""
+    hits, done = [], set()
+    for hit in response.get("hits", {}).get("hits", []):
+        src = hit.get("_source", {})
+        accession = src.get("adsh") or hit.get("_id", "").split(":")[0]
+        filed = _parse_date(src.get("file_date"))
+        ciks = src.get("ciks") or []
+        if not accession or not ciks or filed is None or filed < since or accession in done:
+            continue
+        done.add(accession)
+        folder = f"https://www.sec.gov/Archives/edgar/data/{int(ciks[0])}/{accession.replace('-', '')}"
+        document = hit.get("_id", "").partition(":")[2] or "primary_doc.xml"
+        names = [re.sub(r"\s+\(CIK \d+\)\s*$", "", n).strip() for n in src.get("display_names") or []]
+        hits.append(EftsHit(src.get("form", ""), filed, "; ".join(names) or f"CIK {int(ciks[0])}",
+                            f"{folder}/", f"{folder}/{document}"))
+    return hits
+
+
+def _money(text: str | None) -> str:
+    if not text:
+        return "n/a"
+    try:
+        return f"${float(text):,.0f}"
+    except ValueError:
+        return text.strip()  # "Indefinite"
+
+
+def form_d_summary(xml_text: str) -> str:
+    """The figures of a Form D (primary_doc.xml) in one line: amount sold and offered, first
+    sale, investors. Raises ValueError if it is not a Form D."""
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as error:
+        raise ValueError(f"not valid XML: {error}") from error
+    for node in root.iter():  # drop any namespace so the tag names below match
+        node.tag = node.tag.rpartition("}")[2]
+    amounts = root.find(".//offeringSalesAmounts")
+    if amounts is None:
+        raise ValueError("no offeringSalesAmounts: not a Form D")
+    first = root.find(".//typeOfFiling/dateOfFirstSale")
+    if first is not None and first.findtext("value"):
+        first_sale = first.findtext("value").strip()
+    elif first is not None and (first.findtext("yetToOccur") or "").strip().lower() == "true":
+        first_sale = "yet to occur"
+    else:
+        first_sale = "n/a"
+    investors = (root.findtext(".//investors/totalNumberAlreadyInvested") or "n/a").strip()
+    amendment = (root.findtext(".//typeOfFiling/newOrAmendment/isAmendment") or "").strip().lower() == "true"
+    return (
+        f"{_money(amounts.findtext('totalAmountSold'))} sold of {_money(amounts.findtext('totalOfferingAmount'))}"
+        f" offered, first sale {first_sale}, {investors} investors" + (" (amendment)" if amendment else "")
+    )
+
+
+def docket_entries(results: list[dict], docket_id: int, case: str) -> list[Entry]:
+    """Entries from a CourtListener docket-entries API page. The title carries the court's
+    description of the entry, so an order can be told from a routine filing."""
+    entries = []
+    for result in results:
+        number = result.get("entry_number")
+        documents = result.get("recap_documents") or []
+        text = (result.get("description") or "").strip()
+        if not text:
+            text = next(((d.get("description") or "").strip() for d in documents if d.get("description")), "")
+        text = re.sub(r"\s+", " ", text) or "no description on CourtListener"
+        if len(text) > 300:
+            text = text[:297].rstrip() + "..."
+        label = f"#{number}" if number is not None else "unnumbered"
+        anchor = f"entry-{number}" if number is not None else f"minute-entry-{result.get('id')}"
+        entries.append(Entry(
+            f"{case} {label}: {text}",
+            f"https://www.courtlistener.com/docket/{docket_id}/#{anchor}",
+            _parse_date(result.get("date_filed")),
+            "courtlistener.com",
+        ))
     return entries
 
 

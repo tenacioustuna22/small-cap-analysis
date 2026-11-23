@@ -262,3 +262,105 @@ def test_issue_groups_by_item_in_number_order_and_lists_failures():
     assert "[Deal (update)](https://x.com/a) (2026-11-19, x.com; source: s)" in body
     assert "- Ten (no date; source: s)" in body
     assert "**Could not check**\n- BFLY 8-K: HTTP 403" in body
+
+
+# ---------------------------------------------------------------- EDGAR full-text search, Form D
+
+EFTS = {"hits": {"hits": [
+    {"_id": "0002087109-25-000001:primary_doc.xml", "_source": {
+        "ciks": ["0002087109"], "adsh": "0002087109-25-000001", "form": "D", "file_date": "2025-10-07",
+        "display_names": ["Gaingels Sonic Incytes 2025 LLC  (CIK 0002087109)"]}},
+    {"_id": "0002087109-25-000001:other.xml", "_source": {  # same filing, another document
+        "ciks": ["0002087109"], "adsh": "0002087109-25-000001", "form": "D", "file_date": "2025-10-07"}},
+    {"_id": "0001675206-16-000001:primary_doc.xml", "_source": {
+        "ciks": ["0001675206"], "adsh": "0001675206-16-000001", "form": "D", "file_date": "2016-05-24",
+        "display_names": ["Merge Labs, Inc.  (CIK 0001675206)"]}},
+]}}
+
+FORM_D = """<?xml version="1.0"?>
+<edgarSubmission><submissionType>D</submissionType>
+<primaryIssuer><entityName>Gaingels Sonic Incytes 2025 LLC</entityName></primaryIssuer>
+<offeringData>
+  <typeOfFiling><newOrAmendment><isAmendment>false</isAmendment></newOrAmendment>
+    <dateOfFirstSale><value>2025-09-30</value></dateOfFirstSale></typeOfFiling>
+  <offeringSalesAmounts><totalOfferingAmount>109844</totalOfferingAmount>
+    <totalAmountSold>109844</totalAmountSold><totalRemaining>0</totalRemaining></offeringSalesAmounts>
+  <investors><totalNumberAlreadyInvested>15</totalNumberAlreadyInvested></investors>
+</offeringData></edgarSubmission>"""
+
+
+def test_efts_hits_one_per_filing_since_the_date_with_archive_links():
+    hits = nw.efts_hits(EFTS, date(2025, 1, 1))
+    assert len(hits) == 1
+    hit = hits[0]
+    assert (hit.form, hit.filed, hit.filer) == ("D", date(2025, 10, 7), "Gaingels Sonic Incytes 2025 LLC")
+    assert hit.index_url == "https://www.sec.gov/Archives/edgar/data/2087109/000208710925000001/"
+    assert hit.document_url.endswith("/000208710925000001/primary_doc.xml")
+
+
+def test_form_d_summary_reads_amounts_first_sale_and_investors():
+    assert nw.form_d_summary(FORM_D) == "$109,844 sold of $109,844 offered, first sale 2025-09-30, 15 investors"
+    later = FORM_D.replace("<value>2025-09-30</value>", "<yetToOccur>true</yetToOccur>").replace(
+        "<totalOfferingAmount>109844", "<totalOfferingAmount>Indefinite").replace(
+        "<isAmendment>false", "<isAmendment>true")
+    assert nw.form_d_summary(later) == "$109,844 sold of Indefinite offered, first sale yet to occur, 15 investors (amendment)"
+    with pytest.raises(ValueError):
+        nw.form_d_summary("<edgarSubmission/>")
+
+
+# ---------------------------------------------------------------- CourtListener docket entries
+
+DOCKET_PAGE = [
+    {"id": 1, "entry_number": 274, "date_filed": "2026-11-21",
+     "description": "NOTICE OF MOTION AND MOTION to Compel Midjourney's Compliance", "recap_documents": []},
+    {"id": 2, "entry_number": None, "date_filed": "2026-11-20", "description": "",
+     "recap_documents": [{"description": "Text Only Scheduling Notice"}]},
+    {"id": 3, "entry_number": 35, "date_filed": "2026-11-20", "description": "", "recap_documents": [{}]},
+]
+
+
+def test_docket_entries_carry_the_description_and_a_unique_link():
+    entries = nw.docket_entries(DOCKET_PAGE, 70513159, "Disney v. Midjourney")
+    assert [e.title for e in entries] == [
+        "Disney v. Midjourney #274: NOTICE OF MOTION AND MOTION to Compel Midjourney's Compliance",
+        "Disney v. Midjourney unnumbered: Text Only Scheduling Notice",
+        "Disney v. Midjourney #35: no description on CourtListener",
+    ]
+    assert entries[0].url == "https://www.courtlistener.com/docket/70513159/#entry-274"
+    assert entries[1].url == "https://www.courtlistener.com/docket/70513159/#minute-entry-2"
+    assert entries[0].published == date(2026, 11, 21)
+
+
+def test_bfly_rulings_filter_sends_rulings_now_and_leaves_routine_orders_for_saturday():
+    config = nw.load_config(ROOT / "research" / "BFLY" / "watch" / "BFLY_feeds.toml")
+    rulings = next(s for s in config.sources if s["name"] == "Court dockets: rulings")
+    case = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)"
+    sent = [
+        "#280: ORDER GRANTING IN PART Defendant's Motion for Judgment on the Pleadings 139",
+        "#281: (IN CHAMBERS) ORDER RE MOTION FOR JUDGMENT ON THE PLEADINGS",
+        "#282: MINUTES OF Motion Hearing held before Judge John A. Kronstadt",
+        "#283: NOTICE OF SETTLEMENT filed by Plaintiffs",
+        "#284: STIPULATION of Dismissal filed by Plaintiffs",
+    ]
+    held = [
+        "#266: ORDER GRANTING DEFENDANT MIDJOURNEY,INC.'S APPLICATION FOR LEAVE TO FILE UNDER SEAL",
+        "#267: (IN CHAMBERS) ORDER CHANGING THE TIME FOR THE MOTION HEARING 139",
+        "#24: ORDER by Judge John A. Kronstadt: granting 23 APPLICATION to Appear Pro Hac Vice",
+        "#274: NOTICE OF MOTION AND MOTION to Compel Midjourney's Compliance With the Court's Orders",
+        "#34: Order AND ~Util - Set/Reset Deadlines/Hearings",
+        "#275: PROOF OF SERVICE filed by Plaintiffs re Order",
+    ]
+    entries = [Entry(f"{case} {t}", f"https://x/#{i}", date(2026, 11, 23)) for i, t in enumerate(sent + held)]
+    titles = [i.title for i in nw.to_items(entries, rulings, config)]
+    assert titles == [f"{case} {t}" for t in sent]
+    assert rulings["notify"] == "now"
+    names = [s["name"] for s in config.sources]
+    assert names.index("Court dockets: rulings") < names.index("Court dockets: all filings")
+
+
+def test_courtlistener_dockets_need_an_id_and_a_name(tmp_path):
+    path = tmp_path / "X_feeds.toml"
+    path.write_text('ticker = "X"\nbaseline_date = 2026-11-18\n[[source]]\nname = "d"\nitem = "W3"\n'
+                    'kind = "courtlistener"\ndockets = [{ id = "70513159", name = "Disney" }]\n')
+    with pytest.raises(nw.ConfigError, match="dockets"):
+        nw.load_config(path)

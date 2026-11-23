@@ -8,6 +8,7 @@ import time
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from urllib.parse import urlencode
 
 import requests
 
@@ -78,6 +79,20 @@ def _get_text(url: str, cache_path: Path, refresh: bool, max_age_hours: float | 
 
 def _get_json(url: str, cache_path: Path, refresh: bool) -> dict:
     return json.loads(_get_text(url, cache_path, refresh, CACHE_MAX_AGE_HOURS))
+
+
+FULL_TEXT_URL = "https://efts.sec.gov/LATEST/search-index"
+
+
+def full_text_search(phrase: str, forms: list[str], since: date) -> dict:
+    """EDGAR full-text search for an exact phrase in filings of the given forms, filed since
+    `since`. Always fetched fresh (the cached copy is only a record of the last answer)."""
+    query = urlencode({
+        "q": f'"{phrase}"', "forms": ",".join(forms),
+        "dateRange": "custom", "startdt": since.isoformat(), "enddt": date.today().isoformat(),
+    })
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", f"{phrase}_{'_'.join(forms)}").strip("_")
+    return _get_json(f"{FULL_TEXT_URL}?{query}", CACHE_DIR / "full_text" / f"{slug}.json", refresh=True)
 
 
 def filing_document(url: str) -> str:

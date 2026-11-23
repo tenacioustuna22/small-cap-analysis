@@ -100,6 +100,10 @@ def entries_for(source: dict, config) -> list[Entry]:
         return feeds.eight_k_entries(source["ticker"], source["items"], since)
     if kind == "sec_form_d":
         return feeds.form_d_entries(source["company"], source["cik"], since)
+    if kind == "sec_fulltext":
+        return feeds.form_d_search_entries(source["queries"], source["forms"], since)
+    if kind == "courtlistener":
+        return feeds.docket_entries(source["dockets"], since)
     if kind == "sec_earnings":
         entries = []
         for ticker in source["tickers"]:
@@ -139,8 +143,11 @@ def check(ticker: str, mode: str, dry_run: bool, today: date) -> tuple[list[dict
             record["last_error"] = str(error)
             continue
         state.get("failures", {}).pop(name, None)
+    names = {s["name"] for s in config.sources}
+    for gone in [n for n in state.get("failures", {}) if n not in names]:  # renamed or removed
+        del state["failures"][gone]
 
-    fresh = news_watch.new_items(found, seen, config.sources)
+    fresh =news_watch.new_items(found, seen, config.sources)
     seen += [news_watch.seen_row(item, today) for item in fresh]
     waiting = news_watch.pending(seen, notify_for(mode))
 

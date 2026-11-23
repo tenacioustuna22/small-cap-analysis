@@ -51,11 +51,14 @@ them. The free check already looked; extra searching costs the owner's plan.
 
 In addition to the waiting items:
 
-- **Court docket entries** (the source named "Court docket"): read the docket page once, not each
-  entry. Report only orders, rulings, a settlement, a trial date or a dismissal. Skip routine
-  filings in one line ("12 routine filings").
-- **`[[weekend_only]]` checks** in `research/<TICKER>/watch/<TICKER>_feeds.toml`. These sources
-  have no working free feed. Check each one. If you can't, say so under "Could not check".
+- **Court docket entries** (sources named "Court dockets: ..."): each item's title carries the
+  court's own description of the entry, from the CourtListener API. Work from the titles: don't
+  open the docket pages, which refuse automated reads. Report only orders, rulings, a settlement,
+  a trial date, a hearing date or a dismissal, and new motions that could lead to one. Skip the
+  rest in one line ("9 routine filings: sealing, transcripts, proofs of service"). Rulings are
+  sent in normal runs by "Court dockets: rulings"; report those the same way.
+- **`[[weekend_only]]` checks**, if `research/<TICKER>/watch/<TICKER>_feeds.toml` has any. These
+  sources have no working free feed. Check each one. If you can't, say so under "Could not check".
 - **Repeated failures:** any source in `research/<TICKER>/watch/<TICKER>_watch_state.json` under
   `failures` with `count` 3 or more. The free check has failed on it several times in a row, so
   check it by hand and say so.

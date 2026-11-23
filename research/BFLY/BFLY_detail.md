@@ -204,6 +204,20 @@ Sources:
   - In mid-2026 the case was in discovery disputes: Midjourney sought documents on the studios' own
     AI use.
   - No settlement or trial date had been found.
+  - **The docket itself (CourtListener API, read 2026-11-23; primary court record):**
+    - #139, 2026-07-21: Midjourney's motion for judgment on the pleadings, first set for
+      2026-09-28. On 2026-11-20 the judge (John A. Kronstadt) moved the hearing to 2026-11-23,
+      9:00 am, in person (#267). A win would end some or all claims without a trial.
+    - #269, 2026-11-20: joint report of mediation, filed by both sides. The text isn't on
+      CourtListener (no one has bought it from PACER). A private-mediation deadline of 2026-08-19
+      was reported earlier (chatgptiseatingtheworld.com, unverified).
+    - #270-#274, 2026-11-20/21: the studios' motion to compel Midjourney's compliance "with its
+      prior agreement and the Court's orders regarding the v8 and 'torch-aesthetic-redux' source
+      code", partly under seal. So discovery reaches Midjourney's model code.
+    - #266 and #268: sealing of parts of an October 19 discovery-conference transcript.
+    - EVOX Productions v. Midjourney (CourtListener docket 73698332), a separate suit: initial order
+      setting the Rule 26 scheduling conference (#35, 2026-11-20).
+    - Docket entry descriptions are the court's own; documents are mostly not on CourtListener.
   - **Why it matters for BFLY:** a large judgment, or an injunction that hurts subscriptions, is the
     clearest route to Midjourney failing to pay its fixed fees. Tracked as W3 in
     [BFLY_watch.md](BFLY_watch.md).

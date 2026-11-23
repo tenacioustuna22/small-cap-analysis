@@ -1,15 +1,14 @@
 # BFLY scenarios: decisions and to-do
 
-## Before 2026-12-05: two weekend checks Claude can't do (weekend report, 2026-11-21)
+## Watch automation checks (2026-11-23)
 
-- **EDGAR Form D full-text search (W2, monthly).** Claude's step can only use WebFetch, which
-  can't send the `User-Agent` the SEC requires, so efts.sec.gov returns 403. Move the search into
-  `scripts/watch_check.py` (a new source kind, run in weekend mode on the first weekend of the
-  month) so it arrives as waiting items, and drop it from `[[weekend_only]]`.
-- **Court docket (W3, every Saturday).** CourtListener's pages return 403 to Claude, and its
-  search feed has no entry descriptions, so the weekend run can't tell an order from a routine
-  filing. The CourtListener API gives descriptions but needs a free account token. Ask the owner
-  before adding it (a key). Until then, the owner opens the two docket pages by hand.
+- **Run delays.** The weekend's scheduled runs started 4 to 6 hours late (the 21:30 UTC run of
+  2026-11-22 started at 01:54). Check this week's weekday runs, fast lane included, with
+  `gh run list`. If the fast lane lags by more than about 30 minutes, run it from the PC during
+  market hours instead (Task Scheduler), and keep GitHub for the twice-daily runs.
+- Done 2026-11-23: the EDGAR Form D search and the court dockets moved into the free check
+  (`sec_fulltext` and `courtlistener` sources); the Midjourney Medical blog check was dropped
+  (Cloudflare refuses automated reads, from the PC too).
 
 ## Next up: redesign the daily report (owner, 2026-11-21)
 

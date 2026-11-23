@@ -14,7 +14,8 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **Fast lane:** on weekdays, every 15 minutes around market hours, the free check also looks at
   Butterfly's press releases and its 8-Ks only, so a deal announcement is reported within about
   half an hour.
-- **Saturdays:** Claude also covers the court docket, the checks with no free feed, and W7.
+- **Saturdays:** Claude also covers the week's routine court docket entries, and W7. Court rulings
+  are sent the same day.
 - **The workflow** is `.github/workflows/watch-check.yml`.
 
 - **This file:**
@@ -90,16 +91,17 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 
 - **Tests:** whether partners can pay milestones and sign larger deals. This is the most direct
   link between AI and neurotech money and BFLY.
-- **How often:** weekly for news; monthly for SEC filings.
+- **How often:** twice a day, news and SEC Form D filings (the free check).
 - **Where:**
   - news searches for each company name plus "funding", "raises" or "Series"
-  - SEC Form D filings, which companies file when raising private money. Search EDGAR company
-    names, for example
-    [Merge Labs](https://www.sec.gov/cgi-bin/browse-edgar?company=merge+labs&type=D&owner=include&action=getcompany).
-    Form D can be late, missing or leave the amount blank. None of the partners files under its own
-    name (EDGAR company search, 2026-11-20). "Merge Labs, Inc." (CIK 1675206) is an unrelated 2016
-    San Antonio company. An investment vehicle, "MERGE LABS Sep 2025 a Series of CGF2021 LLC" (CIK
-    2101077), filed a Form D on 2025-12-16. Use EDGAR full-text search by name, monthly.
+  - SEC Form D filings, which companies file when raising private money. The free check runs an
+    EDGAR full-text search for each partner's name and reads the amounts from each Form D found;
+    they arrive in the waiting items. Form D can be late, missing or leave the amount blank. None
+    of the partners files under its own name (EDGAR company search, 2026-11-20). "Merge Labs, Inc."
+    (CIK 1675206) is an unrelated 2016 San Antonio company. Investment vehicles named after a
+    partner do file: "MERGE LABS Sep 2025 a Series of CGF2021 LLC" (CIK 2101077, Form D filed
+    2025-12-16) and "Gaingels Sonic Incytes 2025 LLC" (below). A vehicle's Form D shows money
+    raised by the vehicle, not the size of the partner's round.
 - **Baseline** (other partners recorded 2026-11-20):
 
   | Partner | Latest known funding | Source |
@@ -108,7 +110,7 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
   | Bridge Neurotech | $13.5M, General Catalyst | [TheNextWeb](https://thenextweb.com/news/bridge-neurotech-13-5m-ultrasound-brain-computer-interface) (unverified) |
   | Forest Neurotech | Research organization under Convergent Research; UK safety trial funded by ARIA from March 2025, running about 3.5 years | [Convergent Research](https://www.convergentresearch.org/ecosystem/forest), [Digital Health](https://www.digitalhealth.net/2025/01/brain-implant-will-be-trialled-by-nhs-to-help-treat-neural-conditions) |
   | Mendaera | $73M Series B, 2024-09-26, led by Threshold Ventures with Lux Capital, PFM Health Sciences and Fred Moll. Earlier: $24M Series A (Lux, about Aug 2023, unverified) | [Business Wire release](https://www.businesswire.com/news/home/20240926902349/en) |
-  | Sonic Incytes | US$7.3M Series A, Dec 2021, led by Nimbus Synergies. CB Insights lists a later Series B; not confirmed | [company release via MedTech Innovator](https://medtechinnovator.org/sonic-incytes-successfully-completes-series-a-raise-of-us7-3m-to-accelerate-velacurtm-commercialization/); CB Insights (unverified) |
+  | Sonic Incytes | US$7.3M Series A, Dec 2021, led by Nimbus Synergies. CB Insights lists a later Series B; not confirmed. An investment vehicle, Gaingels Sonic Incytes 2025 LLC, sold $109,844 to 15 investors, first sale 2025-09-30 (recorded 2026-11-23) | [company release via MedTech Innovator](https://medtechinnovator.org/sonic-incytes-successfully-completes-series-a-raise-of-us7-3m-to-accelerate-velacurtm-commercialization/); CB Insights (unverified); [SEC Form D, filed 2025-10-07](https://www.sec.gov/Archives/edgar/data/2087109/000208710925000001/) |
   | Sonic Incytes, commercial | Multi-year partnership with Madrigal Pharmaceuticals (maker of Rezdiffra, a MASH drug) for Velacur ONE liver assessment, 2026-11-19. No financial terms. Velacur ONE got FDA 510(k) clearance K251728 (letter 2025-06-26). **Open:** no source says whether Velacur ONE uses Butterfly's chip. If it does, this is a W1 partner product on sale | [Business Wire via BioSpace](https://www.biospace.com/press-releases/sonic-incytes-announces-multi-year-partnership-with-madrigal-pharmaceuticals-to-advance-non-invasive-liver-assessment-in-mash), [FDA summary](https://fda.innolitics.com/device/K251728) |
   | Aleph Neuro | No funding, investors or valuation disclosed, as of 2026-11-20. Launched publicly 2026-06-25 as a brain-interface research lab | [RuntimeWire](https://runtimewire.com/article/aleph-neuro-ultrasound-brain-imaging-launch) (unverified) |
 
@@ -125,10 +127,14 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **How often:** weekly.
 - **Where:**
   - [Midjourney Medical blog](https://www.midjourney.com/medical/blogpost), which promises regular
-    updates
+    updates. Not checked automatically: Cloudflare refuses automated reads (HTTP 403 from GitHub
+    and from the owner's PC, 2026-11-23). The owner checks it by hand; a new post would also reach
+    the news.
   - news searches for "Midjourney Medical", "Midjourney scanner" and "Midjourney revenue"
-  - for the lawsuit, [CourtListener](https://www.courtlistener.com/) (search "Disney v.
-    Midjourney") and news.
+  - for the lawsuit, the two dockets through the CourtListener API, with the court's description
+    of each entry ([Disney](https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/),
+    [EVOX](https://www.courtlistener.com/docket/73698332/evox-productions-llc-v-midjourney-inc/)),
+    and news. Rulings arrive in a normal run; routine filings wait for Saturday.
 - **Baseline:**
   - **The scanner:**
     - Announced 2026-06-18.
@@ -154,6 +160,18 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
       ([Art Newspaper, 2026-07-09](https://www.theartnewspaper.com/2026/07/09/midjourney-demands-hollywood-AI-secrets),
       [Graphic Policy](https://graphicpolicy.com/2025/11/14/court-suggests-disney-v-midjourney-go-to-mediation/);
       unverified).
+    - The Disney docket to 2026-11-21 ([CourtListener](https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/),
+      recorded 2026-11-23):
+      - Midjourney's motion for judgment on the pleadings (#139, filed 2026-07-21), hearing moved
+        to 2026-11-23, 9:00 am (#267). No ruling yet.
+      - A joint report of mediation was filed on 2026-11-20 (#269). Its contents are not on
+        CourtListener.
+      - On 2026-11-21 the studios moved to compel Midjourney's compliance with "its prior agreement
+        and the Court's orders" regarding the v8 and "torch-aesthetic-redux" source code (#274).
+      - Everything else in the week to 2026-11-21 was routine (sealing, transcripts, proofs of
+        service).
+    - EVOX v. Midjourney: an initial order setting the Rule 26 scheduling conference (#35,
+      2026-11-20). No trial date.
 - **Significant:**
   - **The scanner:** a change to the spa date, a scanner or module count, an FDA submission, or
     research trial results.

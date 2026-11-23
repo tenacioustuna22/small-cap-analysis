@@ -21,6 +21,8 @@
 #                             the day and tolerate frequent requests; Google News does not
 #   rss: url | google_news: query (searched over the last 7 days)
 #   sec_8k: ticker, items | sec_form_d: company, cik | sec_earnings: tickers
+#   sec_fulltext: queries (exact phrases), forms (EDGAR full-text search; Form D amounts are read)
+#   courtlistener: dockets = [{ id, name }] (API; needs COURTLISTENER_TOKEN, a free account token)
 #   correlation: ticker, benchmark, window (days, 60), low (0.3), move (0.2); weekend runs only
 #
 # Titles are matched case-insensitively. To silence a noisy source, tighten its title_must
@@ -153,6 +155,18 @@ kind = "google_news"
 query = '"Aleph Neuro"'
 title_must = 'Aleph Neuro'
 
+# EDGAR company search, 2026-11-20: none of the partners files under its own name. "Merge Labs,
+# Inc." (CIK 1675206) is an unrelated 2016 San Antonio company. Investment vehicles named after a
+# partner do file Form Ds: "MERGE LABS Sep 2025 a Series of CGF2021 LLC" (2025-12-16) and
+# "Gaingels Sonic Incytes 2025 LLC" (2025-10-07, $109,844 from 15 investors). Full-text search
+# finds those, with the amounts read from each Form D. Five requests a run.
+[[source]]
+name = "EDGAR: Form D naming a partner"
+item = "W2"
+kind = "sec_fulltext"
+queries = ["Merge Labs", "Bridge Neurotech", "Mendaera", "Sonic Incytes", "Aleph Neuro", "Forest Neurotech"]
+forms = ["D"]
+
 # ---------------------------------------------------------------- W3 Midjourney
 
 [[source]]
@@ -176,14 +190,30 @@ kind = "google_news"
 query = 'Midjourney (revenue OR funding OR raises OR valuation OR layoffs OR investors)'
 title_must = '^(?=.*Midjourney)(?=.*(revenue|funding|rais|valuation|layoff|investor|subscri|profit))'
 
-# Every filing on the docket, several a week: logged for the Saturday run, not sent now.
-# Rulings reach the news and are flagged by "News: Midjourney lawsuit".
+# The two dockets, entry by entry with the court's description, through the CourtListener API
+# (the web pages refuse automated reads and the search feed has no descriptions; 2026-11-23).
+# Two sources over the same entries: court rulings are sent now; everything else (several
+# filings a week) waits for the Saturday run. The rulings source must come first, so the second
+# skips what it logged. Routine orders (sealing, scheduling, admissions) wait for Saturday.
 [[source]]
-name = "Court docket: Midjourney cases"
+name = "Court dockets: rulings"
 item = "W3"
-kind = "rss"
-url = "https://www.courtlistener.com/feed/search/?q=Midjourney&type=r&order_by=entry_date_filed+desc"
-title_must = 'Midjourney'
+kind = "courtlistener"
+dockets = [
+  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)" },
+  { id = 73698332, name = "EVOX v. Midjourney" },
+]
+title_must = '^(?!.*(under seal|pro hac vice|changing the time|scheduling|set/reset|proof of service)).*(#\d+|unnumbered): (\(in chambers\) )?(order|minutes|judgment|notice of settlement|stipulation.*dismiss)'
+match_titles = false
+
+[[source]]
+name = "Court dockets: all filings"
+item = "W3"
+kind = "courtlistener"
+dockets = [
+  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)" },
+  { id = 73698332, name = "EVOX v. Midjourney" },
+]
 notify = "weekend"
 match_titles = false
 
@@ -275,19 +305,9 @@ low = 0.3
 move = 0.2
 
 # ---------------------------------------------------------------- no free feed
-
-[[weekend_only]]
-item = "W3"
-check = "Midjourney Medical blog: any new post"
-url = "https://www.midjourney.com/medical/blogpost"
-reason = "Cloudflare blocks automated fetches (HTTP 403, tested 2026-11-19)"
-
-# EDGAR company search, 2026-11-20: none of the partners files under its own name. "Merge Labs,
-# Inc." (CIK 1675206) is an unrelated 2016 San Antonio company. "MERGE LABS Sep 2025 a Series of
-# CGF2021 LLC" (CIK 2101077) is an investment vehicle that bought into Merge Labs (Form D filed
-# 2025-12-16). Partner raises still reach the free check through the news queries.
-[[weekend_only]]
-item = "W2"
-check = "Monthly (first weekend): EDGAR full-text search for new Form D filings naming Merge Labs, Bridge Neurotech, Mendaera, Aleph Neuro or Sonic Incytes, including investment vehicles named after them"
-url = "https://efts.sec.gov/LATEST/search-index?q=%22Merge%20Labs%22&forms=D"
-reason = "no partner has its own EDGAR number to watch (company search, 2026-11-20)"
+# None at present. Dropped 2026-11-23:
+# - Midjourney Medical blog (https://www.midjourney.com/medical/blogpost): Cloudflare refuses
+#   automated reads from GitHub and from the owner's PC alike (HTTP 403 challenge). The owner
+#   checked it by hand on 2026-11-21: unchanged since the June 2026 launch post. A new post would
+#   reach the news, which "News: Midjourney medical" watches.
+# - The monthly EDGAR Form D search, now the free source "EDGAR: Form D naming a partner".
