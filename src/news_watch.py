@@ -15,8 +15,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from email.utils import parsedate_to_datetime
+from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 SEEN_COLUMNS = ("first_seen", "item", "notify", "source", "title", "publisher", "url", "published", "status")
 STATUSES = ("new", "reported", "baselined", "dismissed")
@@ -31,6 +32,7 @@ KIND_KEYS = {
     "sec_earnings": {"tickers"},
     "sec_fulltext": {"queries", "forms"},
     "courtlistener": {"dockets"},
+    "page": {"url", "link_must", "headings"},  # link_must or headings, not both
     "correlation": {"ticker", "benchmark", "window", "weekday", "low", "move"},
 }
 TOP_KEYS = {"ticker", "baseline_date", "promote", "filters", "source", "weekend_only"}
@@ -102,13 +104,17 @@ def load_config(path: Path) -> Config:
         extra = set(source) - COMMON_KEYS - KIND_KEYS[kind]
         if extra:
             raise ConfigError(f"{path.name}: source '{name}' has unknown keys {sorted(extra)}")
-        missing = KIND_KEYS[kind] - set(source) - {"window", "weekday", "low", "move"}
+        missing = KIND_KEYS[kind] - set(source) - {"window", "weekday", "low", "move", "link_must", "headings"}
         if missing:
             raise ConfigError(f"{path.name}: source '{name}' is missing {sorted(missing)}")
         if kind == "courtlistener" and not all(
             isinstance(d, dict) and isinstance(d.get("id"), int) and d.get("name") for d in source["dockets"]
         ):
             raise ConfigError(f"{path.name}: source '{name}' dockets must be {{ id = 123, name = \"...\" }}")
+        if kind == "page" and ("link_must" in source) == ("headings" in source):
+            raise ConfigError(f"{path.name}: source '{name}' needs link_must or headings (one of them)")
+        if kind == "page" and source.get("headings", "h2") not in ("h1", "h2", "h3", "h4"):
+            raise ConfigError(f"{path.name}: source '{name}' headings must be h1, h2, h3 or h4")
         if not re.fullmatch(r"W\d+", source.get("item", "")):
             raise ConfigError(f"{path.name}: source '{name}' needs item = \"W1\" (or W2, ...)")
         source.setdefault("notify", "now")
@@ -277,6 +283,79 @@ def docket_entries(results: list[dict], docket_id: int, case: str) -> list[Entry
     return entries
 
 
+class _PageParser(HTMLParser):
+    """Collects a page's <title>, its links with their visible text, and the text of one
+    heading level."""
+
+    def __init__(self, heading: str | None):
+        super().__init__(convert_charrefs=True)
+        self.heading = heading
+        self.title = ""
+        self.links: list[tuple[str, str]] = []
+        self.headings: list[str] = []
+        self._href: str | None = None
+        self._text: list[str] = []
+        self._in: str | None = None  # "a", the heading tag or "title"
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a" and self._in is None:
+            self._href, self._text, self._in = dict(attrs).get("href") or "", [], "a"
+        elif tag in ("title", self.heading) and self._in is None:
+            self._text, self._in = [], tag
+
+    def handle_endtag(self, tag):
+        if tag != self._in:
+            return
+        text = re.sub(r"\s+", " ", "".join(self._text)).strip()
+        if tag == "a":
+            self.links.append((self._href or "", text))
+        elif tag == "title":
+            self.title = self.title or text
+        else:
+            self.headings.append(text)
+        self._in = None
+
+    def handle_data(self, data):
+        if self._in:
+            self._text.append(data)
+
+
+def _slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def page_items(html_text: str, base_url: str, link_must: str | None = None,
+               headings: str | None = None) -> list[Entry]:
+    """Headlines on a news page with no feed. Either the links whose absolute URL matches
+    `link_must` (a regex), or the text of every `headings` tag (h2, ...), each given a link of
+    the page plus an anchor so it can be told apart. Pages carry no dates."""
+    parser = _PageParser(headings)
+    parser.feed(html_text)
+    domain = _domain(base_url)
+    entries, done = [], set()
+    if headings:
+        for text in parser.headings:
+            url = f"{base_url.split('#')[0]}#{_slug(text)}"
+            if text and url not in done:
+                done.add(url)
+                entries.append(Entry(text, url, None, domain))
+        return entries
+    must = re.compile(link_must or ".", re.IGNORECASE)
+    texts: dict[str, str] = {}
+    for href, text in parser.links:
+        url = urljoin(base_url, href.strip()).split("#")[0]
+        if not href.strip() or href.strip().startswith("#") or not must.search(url):
+            continue
+        if url not in texts:
+            texts[url] = text
+        elif not texts[url] and text:
+            texts[url] = text  # a later link to the same page has the text
+    for url, text in texts.items():
+        title = text or parser.title or url.rstrip("/").rsplit("/", 1)[-1]
+        entries.append(Entry(title, url, None, _domain(url)))
+    return entries
+
+
 def strip_publisher(title: str, publisher: str) -> str:
     """Google News appends ' - Publisher' to every title."""
     suffix = f" - {publisher}"
@@ -381,7 +460,7 @@ def save_seen(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def seen_row(item: Item, today: date) -> dict:
+def seen_row(item: Item, today: date, status: str = "new") -> dict:
     return {
         "first_seen": today.isoformat(),
         "item": item.item,
@@ -391,8 +470,20 @@ def seen_row(item: Item, today: date) -> dict:
         "publisher": item.publisher,
         "url": item.url,
         "published": item.published.isoformat() if item.published else "",
-        "status": "new",
+        "status": status,
     }
+
+
+def first_reads(seen: list[dict], sources: list[dict]) -> set[str]:
+    """Page sources with nothing in the seen-log yet. A news page lists its past headlines too,
+    so on the first read they are logged as baselined and only later ones reach Claude."""
+    logged = {r["source"] for r in seen}
+    return {s["name"] for s in sources if s["kind"] == "page" and s["name"] not in logged}
+
+
+def log_rows(fresh: list[Item], seeding: set[str], today: date) -> list[dict]:
+    """Seen-log rows for this run's new items: baselined for a page source's first read."""
+    return [seen_row(item, today, "baselined" if item.source in seeding else "new") for item in fresh]
 
 
 def pending(rows: list[dict], notify: tuple[str, ...] = ("now",)) -> list[dict]:

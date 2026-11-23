@@ -94,6 +94,9 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
 - **How often:** twice a day, news and SEC Form D filings (the free check).
 - **Where:**
   - news searches for each company name plus "funding", "raises" or "Series"
+  - the partners' own news pages, twice a day (no feeds; added 2026-11-23):
+    [Mendaera press releases](https://www.mendaera.com/news-and-events) and the
+    [Merge Labs blog](https://merge.io/blog). A headline naming Butterfly is filed under W1.
   - SEC Form D filings, which companies file when raising private money. The free check runs an
     EDGAR full-text search for each partner's name and reads the amounts from each Form D found;
     they arrive in the waiting items. Form D can be late, missing or leave the amount blank. None
@@ -129,7 +132,8 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
   - [Midjourney Medical blog](https://www.midjourney.com/medical/blogpost), which promises regular
     updates. Not checked automatically: Cloudflare refuses automated reads (HTTP 403 from GitHub
     and from the owner's PC, 2026-11-23). The owner checks it by hand; a new post would also reach
-    the news.
+    the news. Midjourney's updates blog (updates.midjourney.com) is password-protected, so it
+    can't be watched either.
   - news searches for "Midjourney Medical", "Midjourney scanner" and "Midjourney revenue"
   - for the lawsuit, the two dockets through the CourtListener API, with the court's description
     of each entry ([Disney](https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/),

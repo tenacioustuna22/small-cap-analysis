@@ -63,6 +63,19 @@ def feed_entries(url: str) -> list[Entry]:
         raise FeedError(str(error)) from error
 
 
+def page_entries(url: str, link_must: str | None, headings: str | None) -> list[Entry]:
+    """Headlines on a news page that has no feed (see news_watch.page_items). A page that
+    refuses an ordinary request is a failure: don't try to get past it."""
+    response = _polite_get(url)
+    if response.status_code != 200:
+        raise FeedError(f"HTTP {response.status_code}")
+    try:
+        text = response.content.decode("utf-8")  # many pages don't name their charset
+    except UnicodeDecodeError:
+        text = response.text
+    return news_watch.page_items(text, response.url or url, link_must, headings)
+
+
 def _filings(submissions: dict, since: date) -> list[edgar.Filing]:
     return [f for f in edgar.recent_filings(submissions) if f.filed >= since]
 

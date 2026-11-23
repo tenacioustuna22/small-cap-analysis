@@ -23,6 +23,9 @@
 #   sec_8k: ticker, items | sec_form_d: company, cik | sec_earnings: tickers
 #   sec_fulltext: queries (exact phrases), forms (EDGAR full-text search; Form D amounts are read)
 #   courtlistener: dockets = [{ id, name }] (API; needs COURTLISTENER_TOKEN, a free account token)
+#   page: url, and either link_must (regex on the article links' URLs) or headings ("h2", ...),
+#     for a news page with no feed. Its first read is logged as baselined, not sent. If the page
+#     refuses an ordinary request or is built by JavaScript, leave it out; don't get around it
 #   correlation: ticker, benchmark, window (days, 60), low (0.3), move (0.2); weekend runs only
 #
 # Titles are matched case-insensitively. To silence a noisy source, tighten its title_must
@@ -158,6 +161,25 @@ item = "W2"
 kind = "google_news"
 query = '"Aleph Neuro"'
 title_must = 'Aleph Neuro'
+
+# Partners' own news pages (no feeds; found and tested with an ordinary request, 2026-11-23).
+# The first read logs every headline already there as baselined; only later ones are sent.
+# A Butterfly headline is promoted to W1. Left out: Midjourney's updates blog (password-protected,
+# redirects to /private/) and midjourney.com (Cloudflare refuses automated reads).
+[[source]]
+name = "Mendaera press releases"
+item = "W2"
+kind = "page"
+url = "https://www.mendaera.com/news-and-events"
+link_must = 'mendaera\.com/press-releases/.+'
+
+[[source]]
+name = "Merge Labs blog"
+item = "W2"
+kind = "page"
+url = "https://merge.io/blog"
+# Posts are headings on one page, not links (2026-11-23: one post, "Introducing Merge Labs").
+headings = "h2"
 
 # EDGAR company search, 2026-11-20: none of the partners files under its own name. "Merge Labs,
 # Inc." (CIK 1675206) is an unrelated 2016 San Antonio company. Investment vehicles named after a

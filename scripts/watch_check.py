@@ -104,6 +104,8 @@ def entries_for(source: dict, config) -> list[Entry]:
         return feeds.form_d_search_entries(source["queries"], source["forms"], since)
     if kind == "courtlistener":
         return feeds.docket_entries(source["dockets"], since)
+    if kind == "page":
+        return feeds.page_entries(source["url"], source.get("link_must"), source.get("headings"))
     if kind == "sec_earnings":
         entries = []
         for ticker in source["tickers"]:
@@ -147,13 +149,18 @@ def check(ticker: str, mode: str, dry_run: bool, today: date) -> tuple[list[dict
     for gone in [n for n in state.get("failures", {}) if n not in names]:  # renamed or removed
         del state["failures"][gone]
 
-    fresh =news_watch.new_items(found, seen, config.sources)
-    seen += [news_watch.seen_row(item, today) for item in fresh]
+    fresh = news_watch.new_items(found, seen, config.sources)
+    seeding = news_watch.first_reads(seen, config.sources)
+    seen += news_watch.log_rows(fresh, seeding, today)
     waiting = news_watch.pending(seen, notify_for(mode))
 
-    print(f"{ticker}: {len(fresh)} new, {len(waiting)} waiting for Claude ({mode} run)")
+    seeded = [item for item in fresh if item.source in seeding]
+    print(f"{ticker}: {len(fresh) - len(seeded)} new, {len(waiting)} waiting for Claude ({mode} run)")
     for item in fresh:
-        print(f"  [{item.item}] {item.title} ({item.published or 'no date'}, {item.publisher or item.source})")
+        if item.source not in seeding:
+            print(f"  [{item.item}] {item.title} ({item.published or 'no date'}, {item.publisher or item.source})")
+    for name in sorted({item.source for item in seeded}):
+        print(f"  first read of {name}: {sum(i.source == name for i in seeded)} headlines logged as baselined")
     for name, reason in failures.items():
         print(f"  could not check {name}: {reason}")
 

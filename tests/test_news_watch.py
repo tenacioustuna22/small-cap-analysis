@@ -387,3 +387,62 @@ def test_bfly_blocks_simply_wall_st_pieces_but_not_real_news():
     entries = [Entry(t, f"https://finance.yahoo.com/{i}", date(2026, 11, 22), "finance.yahoo.com")
                for i, t in enumerate(junk + real)]
     assert [i.title for i in nw.to_items(entries, source, config)] == real
+
+
+# ---------------------------------------------------------------- news pages with no feed
+
+NEWS_PAGE = """<html><head><title>News &amp; Events</title></head><body>
+<nav><a href="/">Home</a><a href="/about">About</a></nav>
+<a href="/press-releases/focalist-butterfly"></a>
+<a href="/press-releases/focalist-butterfly">Mendaera&#8217;s Focalist System Now Compatible with Butterfly</a>
+<a href="#">Mendaera&#8217;s Focalist System Now Compatible with Butterfly</a>
+<a href="https://www.mendaera.com/press-releases/study#top">New   Peer-Reviewed <b>Study</b></a>
+<a href="https://www.uab.edu/news/urology">UAB urologist advances kidney stone surgery</a>
+<a href="/press-releases/no-text"><img src="x.png"></a>
+<h2>Introducing Merge Labs</h2><h3>Sam Altman</h3><h2>Introducing Merge Labs</h2>
+</body></html>"""
+
+
+def test_page_items_keeps_article_links_with_their_text():
+    entries = nw.page_items(NEWS_PAGE, "https://www.mendaera.com/news-and-events",
+                            link_must=r"mendaera\.com/press-releases/.+")
+    assert [(e.title, e.url) for e in entries] == [
+        ("Mendaera\u2019s Focalist System Now Compatible with Butterfly",
+         "https://www.mendaera.com/press-releases/focalist-butterfly"),
+        ("New Peer-Reviewed Study", "https://www.mendaera.com/press-releases/study"),
+        ("News & Events", "https://www.mendaera.com/press-releases/no-text"),  # no text: the page title
+    ]
+    assert all(e.published is None and e.publisher == "mendaera.com" for e in entries)
+
+
+def test_page_items_can_read_headings_instead_of_links():
+    entries = nw.page_items(NEWS_PAGE, "https://merge.io/blog", headings="h2")
+    assert [(e.title, e.url) for e in entries] == [("Introducing Merge Labs", "https://merge.io/blog#introducing-merge-labs")]
+
+
+def test_page_source_needs_link_must_or_headings_but_not_both(tmp_path):
+    base = 'ticker = "X"\nbaseline_date = 2026-11-18\n[[source]]\nname = "p"\nitem = "W2"\nkind = "page"\nurl = "https://x.com"\n'
+    path = tmp_path / "X_feeds.toml"
+    for extra in ("", 'link_must = "a"\nheadings = "h2"\n'):
+        path.write_text(base + extra)
+        with pytest.raises(nw.ConfigError, match="link_must or headings"):
+            nw.load_config(path)
+    path.write_text(base + 'headings = "p"\n')
+    with pytest.raises(nw.ConfigError, match="h1, h2"):
+        nw.load_config(path)
+    path.write_text(base + 'link_must = "/news/"\n')
+    assert nw.load_config(path).sources[0]["kind"] == "page"
+
+
+def test_a_page_sources_first_read_is_baselined_and_later_headlines_are_new():
+    sources = [{"name": "Merge Labs blog", "kind": "page"}, {"name": "News: Merge Labs", "kind": "google_news"}]
+    today = date(2026, 11, 23)
+    first = [Item("W2", "now", "Merge Labs blog", "Introducing Merge Labs", "merge.io", "https://merge.io/blog#a", None),
+             Item("W2", "now", "News: Merge Labs", "Merge Labs raises", "x.com", "https://x.com/1", today)]
+    seeding = nw.first_reads([], sources)
+    assert seeding == {"Merge Labs blog"}
+    rows = nw.log_rows(first, seeding, today)
+    assert [r["status"] for r in rows] == ["baselined", "new"]
+    later = [Item("W2", "now", "Merge Labs blog", "Merge Labs and Butterfly", "merge.io", "https://merge.io/blog#b", None)]
+    assert nw.first_reads(rows, sources) == set()
+    assert [r["status"] for r in nw.log_rows(later, nw.first_reads(rows, sources), today)] == ["new"]

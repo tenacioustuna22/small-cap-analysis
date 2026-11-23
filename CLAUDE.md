@@ -77,7 +77,8 @@ group; a dropped waiting run loses nothing, since the seen-log is the record.
 
 - **Free check:** `scripts/watch_check.py` reads every `research/*/watch/*_feeds.toml` (RSS,
   Google News RSS, EDGAR 8-K, Form D and earnings filings, EDGAR full-text search with Form D
-  amounts, and CourtListener docket entries through its API), filters the results,
+  amounts, CourtListener docket entries through its API, and partners' news pages that have no
+  feed, whose first read is logged as baselined), filters the results,
   and appends new items to `research/<TICKER>/watch/<TICKER>_seen.csv`. The status column runs
   `new`, then `reported`, then `baselined` or `dismissed`. Source failures and the W7 correlation
   go in `research/<TICKER>/watch/<TICKER>_watch_state.json`. Pure logic lives in
