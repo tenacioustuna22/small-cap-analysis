@@ -125,7 +125,8 @@ _docket_cache: dict[tuple, list[Entry]] = {}
 def docket_entries(dockets: list[dict], since: date) -> list[Entry]:
     """New entries on CourtListener dockets, with the court's description of each, through the
     API (a free account token in COURTLISTENER_TOKEN). The web pages refuse automated reads."""
-    token = os.environ.get("COURTLISTENER_TOKEN", "").strip()
+    # Windows PowerShell 5.1 adds a byte-order mark when it pipes text into `gh secret set`.
+    token = os.environ.get("COURTLISTENER_TOKEN", "").replace("﻿", "").strip()
     if not token:
         raise FeedError("COURTLISTENER_TOKEN is not set")
     since = max(since, date.today() - timedelta(days=COURTLISTENER_DAYS))
@@ -144,11 +145,11 @@ def docket_entries(dockets: list[dict], since: date) -> list[Entry]:
                 break
             try:
                 response = requests.get(url, params=params, headers=headers, timeout=30)
-            except requests.RequestException as error:
+                if response.status_code != 200:
+                    raise FeedError(f"{docket['name']}: HTTP {response.status_code}")
+                page = response.json()
+            except (requests.RequestException, ValueError) as error:  # ValueError: a bad token or reply
                 raise FeedError(f"{docket['name']}: request failed: {error}") from error
-            if response.status_code != 200:
-                raise FeedError(f"{docket['name']}: HTTP {response.status_code}")
-            page = response.json()
             found += news_watch.docket_entries(page.get("results", []), docket["id"], docket["name"])
             url, params = page.get("next"), None
         _docket_cache[key] = found
