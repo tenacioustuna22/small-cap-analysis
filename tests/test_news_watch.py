@@ -364,3 +364,26 @@ def test_courtlistener_dockets_need_an_id_and_a_name(tmp_path):
                     'kind = "courtlistener"\ndockets = [{ id = "70513159", name = "Disney" }]\n')
     with pytest.raises(nw.ConfigError, match="dockets"):
         nw.load_config(path)
+
+
+def test_bfly_blocks_simply_wall_st_pieces_but_not_real_news():
+    config = nw.load_config(ROOT / "research" / "BFLY" / "watch" / "BFLY_feeds.toml")
+    source = next(s for s in config.sources if s["name"] == "News: Butterfly Network")
+    junk = [
+        "What Butterfly Network Buyers Were Betting On Before A 104% Rally",
+        "Investors Who Bought Butterfly Network Five Years Ago Are Up 150%",
+        "Here's Why We're Not Too Worried About Butterfly Network's Cash Burn Situation",
+        "Is Butterfly Network (NYSE:BFLY) Using Too Much Debt?",
+        "Revenues Tell The Story For Butterfly Network, Inc. (NYSE:BFLY) As Its Stock Soars 26%",
+        "Butterfly Network, Inc.'s (NYSE:BFLY) P/S Is Still On The Mark Following 26% Share Price Bounce",
+        "Retail investors who own 45% along with institutions invested in Butterfly Network",
+        "Butterfly Network Valuation Check After Recent Share Price Momentum",
+    ]
+    real = [
+        "Butterfly Network to Present at 9th Annual Evercore Healthcare Conference on December 1, 2026",
+        "Butterfly Network and Midjourney expand Ultrasound-on-Chip agreement",
+        "Are AI startups overvalued? Venture investors weigh the narrative",  # no Butterfly: kept
+    ]
+    entries = [Entry(t, f"https://finance.yahoo.com/{i}", date(2026, 11, 22), "finance.yahoo.com")
+               for i, t in enumerate(junk + real)]
+    assert [i.title for i in nw.to_items(entries, source, config)] == real

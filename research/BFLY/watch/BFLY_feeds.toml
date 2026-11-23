@@ -55,6 +55,10 @@ blocked_titles = [
   # insider trades are covered by the Form 4 section of scripts/report.py
   '\bForm (4|144)\b',
   '\b(sells|buys|sold|bought) \$[\d.,]+ ?[MKB]?\w* (in|of|worth)\b',
+  # Simply Wall St's templated stock pieces, syndicated through finance.yahoo.com and Webull, so
+  # blocking its domain misses them (2026-11-22: "What Butterfly Network Buyers Were Betting On
+  # Before A 104% Rally"). Only when the title names Butterfly: the words can be real sector news.
+  '^(?=.*\b(Butterfly|BFLY)\b).*(betting on before|\d+(\.\d+)?% (rally|gain|surge|jump|price jump|share price|plunge|drop|decline|slide|pop|rebound|loss|bounce)|cash burn|(too much|sensibly|responsibly) debt|\b(P/S|P/E|price-to-sales|price-to-earnings)\b|fair value|intrinsic value|undervalued|overvalued|valuation check|share price momentum|narrative|revenues? tells? the story|\b(shareholders|investors|insiders|buyers) (who|have|were|are)\b.*\b(up|down|return|returns|loss|losses|gain|gains|earned|lost|betting)\b|\b(institutional|retail|individual) (investors|owners|shareholders)\b.*\b(own|hold|control)\b)',
 ]
 
 # ---------------------------------------------------------------- W1 Embedded deals
