@@ -7,11 +7,5 @@
       "window": 60
     }
   },
-  "failures": {
-    "Court dockets: rulings": {
-      "count": 1,
-      "last_error": "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275): request failed: HTTPSConnectionPool(host='www.courtlistener.com', port=443): Read timed out. (read timeout=30)",
-      "since": "2026-11-24"
-    }
-  }
+  "failures": {}
 }
