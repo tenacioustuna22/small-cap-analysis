@@ -77,7 +77,8 @@ late from 2026-11-21 to 2026-11-23. The jobs (times in each job's own time zone)
 The cron-job.org token is a fine-grained GitHub token for this repo only, with Actions read and
 write; it expires, so renew it before the date in `TODO.md`. GitHub's own schedule stays as a
 backup for the three main runs (14:30 and 21:30 UTC, Saturday 15:17 UTC); a late backup run finds
-nothing new, and a second report in the same slot is named `-2`, never overwriting the first.
+nothing new, a second report in the same slot is named `-2`, never overwriting the first, and the
+Saturday backup skips itself when that day's weekend report exists.
 The **fast lane** checks only sources marked `fast = true` in the feeds
 file (BFLY: its press release feed and 8-Ks). Mark only sources that move the price within the day
 and tolerate frequent requests (never Google News). Its reports are named by Pacific time

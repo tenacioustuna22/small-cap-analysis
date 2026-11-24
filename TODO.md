@@ -2,10 +2,11 @@
 
 ## Watch automation checks (2026-11-23)
 
-- **Run delays.** The weekend's scheduled runs started 4 to 6 hours late (the 21:30 UTC run of
-  2026-11-22 started at 01:54). Check this week's weekday runs, fast lane included, with
-  `gh run list`. If the fast lane lags by more than about 30 minutes, run it from the PC during
-  market hours instead (Task Scheduler), and keep GitHub for the twice-daily runs.
+- **Run delays: moving to cron-job.org (2026-11-24).** GitHub's schedule ran 4 to 11 hours late
+  from 2026-11-21 to 2026-11-23, and the fast lane started 1 of 44 runs on 2026-11-23. Runs are
+  now started by cron-job.org through workflow_dispatch (tested: started within a second).
+  - After setup, check a day of runs with `gh run list`: event `workflow_dispatch`, on time.
+  - **Renew the cron-job.org GitHub token before it expires** (date: fill in when created).
 - Done 2026-11-23: the EDGAR Form D search and the court dockets moved into the free check
   (`sec_fulltext` and `courtlistener` sources); the Midjourney Medical blog check was dropped
   (Cloudflare refuses automated reads, from the PC too).

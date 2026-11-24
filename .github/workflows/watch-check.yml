@@ -20,7 +20,8 @@
 #            marked `fast = true` in the feeds files (BFLY's press releases and 8-Ks). Its report
 #            file is named by the Pacific time, for example _0637.
 # GitHub's schedule below stays as a backup for the three main runs. When it fires late it finds
-# nothing new and stays quiet, and a report never overwrites an earlier one (a second gets -2).
+# nothing new and stays quiet, a report never overwrites an earlier one (a second gets -2), and
+# the Saturday backup skips itself when that day's weekend report exists.
 # The scheduler's token is a fine-grained one for this repo only, with Actions read and write.
 #
 # Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR), COURTLISTENER_TOKEN (a free
@@ -88,6 +89,10 @@ jobs:
           while ls research/*/watch/reports/*_"$day"_"$slot".md >/dev/null 2>&1; do
             slot="${base}-$n"; n=$((n + 1))
           done
+          # The weekend run always reports, so GitHub's backup skips a Saturday already covered.
+          if [ "${{ github.event_name }}" = schedule ] && [ "$mode" = weekend ] && [ "$slot" != weekend ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           # Claude's instructions know "now" and "weekend"; a fast-lane run is a "now" run.
           if [ "$mode" = weekend ]; then echo "claude_mode=weekend" >> "$GITHUB_OUTPUT"
@@ -97,6 +102,7 @@ jobs:
 
       - name: Free check
         id: check
+        if: steps.mode.outputs.skip != 'true'
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
           COURTLISTENER_TOKEN: ${{ secrets.COURTLISTENER_TOKEN }}
