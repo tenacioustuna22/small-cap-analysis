@@ -75,7 +75,7 @@ late from 2026-11-21 to 2026-11-23. The jobs (times in each job's own time zone)
 - `fast`: every 15 minutes from 6:07 am to 4:52 pm Eastern on weekdays
 
 The cron-job.org token is a fine-grained GitHub token for this repo only, with Actions read and
-write; it expires, so renew it before the date in `TODO.md`. GitHub's own schedule stays as a
+write; it expires on 2027-11-24, so renew it before then (also in `TODO.md`). GitHub's own schedule stays as a
 backup for the three main runs (14:30 and 21:30 UTC, Saturday 15:17 UTC); a late backup run finds
 nothing new, a second report in the same slot is named `-2`, never overwriting the first, and the
 Saturday backup skips itself when that day's weekend report exists.

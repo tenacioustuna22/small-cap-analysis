@@ -6,7 +6,8 @@
   from 2026-11-21 to 2026-11-23, and the fast lane started 1 of 44 runs on 2026-11-23. Runs are
   now started by cron-job.org through workflow_dispatch (tested: started within a second).
   - After setup, check a day of runs with `gh run list`: event `workflow_dispatch`, on time.
-  - **Renew the cron-job.org GitHub token before it expires** (date: fill in when created).
+  - **Renew the cron-job.org GitHub token before it expires on 2027-11-24.** Make a new
+    fine-grained token (this repo only, Actions read and write) and replace it in all four jobs.
 - Done 2026-11-23: the EDGAR Form D search and the court dockets moved into the free check
   (`sec_fulltext` and `courtlistener` sources); the Midjourney Medical blog check was dropped
   (Cloudflare refuses automated reads, from the PC too).
