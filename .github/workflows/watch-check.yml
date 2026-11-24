@@ -9,13 +9,22 @@
 # 3. The report is posted as a comment on the issue, the items are marked reported and
 #    everything is committed.
 #
-# Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR), COURTLISTENER_TOKEN (a free
-# CourtListener account's API token) and CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`). Cron is in UTC: 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific
-# in winter, an hour later in summer. Saturday skips 14:30: the 15:17 weekend run covers it (off the hour: the 15:00 run was dropped on 2026-11-21).
+# Who starts the runs: an outside scheduler (cron-job.org), through the API's workflow_dispatch,
+# because GitHub's own schedule is best effort and ran 4 to 11 hours late from 2026-11-21 to
+# 2026-11-23 (the fast lane started 1 of 44 runs on 2026-11-23). A run started that way begins
+# within seconds. The cron-job.org jobs, in their own time zones:
+#   now      6:30 am Pacific, Sunday to Friday
+#   now      1:30 pm Pacific, every day
+#   weekend  7:00 am Pacific, Saturday (court docket, W7)
+#   fast     every 15 minutes from 6:07 am to 4:52 pm Eastern, Monday to Friday: only sources
+#            marked `fast = true` in the feeds files (BFLY's press releases and 8-Ks). Its report
+#            file is named by the Pacific time, for example _0637.
+# GitHub's schedule below stays as a backup for the three main runs. When it fires late it finds
+# nothing new and stays quiet, and a report never overwrites an earlier one (a second gets -2).
+# The scheduler's token is a fine-grained one for this repo only, with Actions read and write.
 #
-# Fast lane: on weekdays, every 15 minutes from 11:07 to 21:52 UTC (about 6 am to 5 pm Eastern in
-# winter, an hour later in summer), only sources marked `fast = true` in the feeds files (BFLY's
-# press releases and 8-Ks). Its report file is named by the Pacific time, for example _0637.
+# Repo secrets: SEC_USER_AGENT (name and contact email for EDGAR), COURTLISTENER_TOKEN (a free
+# CourtListener account's API token) and CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`).
 #
 # All runs share one concurrency group, so two never edit the seen-log at once. GitHub keeps only
 # one waiting run per group; if runs pile up, a waiting one is dropped. Nothing is lost: the
@@ -24,10 +33,10 @@ name: Watchlist check
 
 on:
   schedule:
-    - cron: "30 14 * * 0-5"   # mornings except Saturday: flagged items only
-    - cron: "30 21 * * *"     # afternoons: flagged items only
-    - cron: "17 15 * * 6"      # Saturday: weekend run (court docket, W7)
-    - cron: "7,22,37,52 11-21 * * 1-5"  # weekdays: fast lane (fast = true sources only)
+    # Backup only (UTC; see above). 14:30 and 21:30 are 6:30 am and 1:30 pm Pacific in winter.
+    - cron: "30 14 * * 0-5"   # mornings except Saturday
+    - cron: "30 21 * * *"     # afternoons
+    - cron: "17 15 * * 6"     # Saturday: weekend run (off the hour: GitHub drops on-the-hour runs)
   workflow_dispatch:
     inputs:
       mode:
@@ -64,18 +73,27 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then mode="${{ inputs.mode }}"
           elif [ "${{ github.event.schedule }}" = "17 15 * * 6" ]; then mode=weekend
-          elif [ "${{ github.event.schedule }}" = "7,22,37,52 11-21 * * 1-5" ]; then mode=fast
           else mode=now; fi
+          day="$(TZ=America/Los_Angeles date +%F)"
+          # A late scheduled run keeps the name of the slot it was scheduled for (GitHub started
+          # the 6:30 am run at 5:47 pm on 2026-11-23).
           if [ "$mode" = weekend ]; then slot=weekend
           elif [ "$mode" = fast ]; then slot="$(TZ=America/Los_Angeles date +%H%M)"
+          elif [ "${{ github.event.schedule }}" = "30 14 * * 0-5" ]; then slot=am
+          elif [ "${{ github.event.schedule }}" = "30 21 * * *" ]; then slot=pm
           elif [ "$(TZ=America/Los_Angeles date +%-H)" -lt 12 ]; then slot=am
           else slot=pm; fi
+          # Never overwrite an earlier report of the same day and slot.
+          base="$slot"; n=2
+          while ls research/*/watch/reports/*_"$day"_"$slot".md >/dev/null 2>&1; do
+            slot="${base}-$n"; n=$((n + 1))
+          done
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           # Claude's instructions know "now" and "weekend"; a fast-lane run is a "now" run.
           if [ "$mode" = weekend ]; then echo "claude_mode=weekend" >> "$GITHUB_OUTPUT"
           else echo "claude_mode=now" >> "$GITHUB_OUTPUT"; fi
           echo "slot=$slot" >> "$GITHUB_OUTPUT"
-          echo "day=$(TZ=America/Los_Angeles date +%F)" >> "$GITHUB_OUTPUT"
+          echo "day=$day" >> "$GITHUB_OUTPUT"
 
       - name: Free check
         id: check

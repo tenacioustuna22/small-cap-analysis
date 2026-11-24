@@ -176,6 +176,15 @@ def test_new_items_skip_seen_urls_and_syndicated_titles():
     assert [i.url for i in nw.new_items(found, seen, [source(name="News: test")])] == ["https://other.com/new"]
 
 
+def test_a_trailing_byline_does_not_make_a_copy_new():
+    seen = [{"url": "https://a.com/1", "title": "Sonic Incytes partners with Madrigal on liver disease assessment"}]
+    found = [
+        item("Sonic Incytes partners with Madrigal on liver disease assessment By Investing.com", "https://b.com/2"),
+        item("A story written by Jane Smith about partners", "https://b.com/3"),  # a name, not a site
+    ]
+    assert [i.url for i in nw.new_items(found, seen, [source(name="News: test")])] == ["https://b.com/3"]
+
+
 def test_docket_entries_with_the_same_title_are_kept_apart_by_fragment():
     court = source(name="Court", kind="rss", match_titles=False)
     found = [

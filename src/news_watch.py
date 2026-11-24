@@ -403,8 +403,13 @@ def normalize_url(url: str) -> str:
     return urlunsplit((parts.scheme.lower(), host, parts.path.rstrip("/"), query, parts.fragment))
 
 
+# A syndicated copy can carry a byline the first copy didn't ("... By Investing.com").
+_TRAILING_BYLINE = re.compile(r"\s+by\s+[\w-]+(\.[\w-]+)+\s*$", re.IGNORECASE)
+
+
 def normalize_title(title: str) -> str:
-    return re.sub(r"[^a-z0-9]+", " ", html.unescape(title).lower()).strip()
+    title = _TRAILING_BYLINE.sub("", html.unescape(title))
+    return re.sub(r"[^a-z0-9]+", " ", title.lower()).strip()
 
 
 def _title_key(title: str) -> str | None:

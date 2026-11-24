@@ -67,9 +67,18 @@ Frame conclusions for both horizons: the multi-year thesis, and the near-term se
 
 ## Watchlist automation (2026-11-20)
 
-`.github/workflows/watch-check.yml` runs on GitHub at 14:30 UTC (not on Saturdays) and 21:30
-UTC every day, and on Saturdays at 15:17 UTC (the weekend run; off the hour, because GitHub drops on-the-hour runs when busy, as on 2026-11-21). A **fast lane** runs on weekdays
-every 15 minutes from 11:07 to 21:52 UTC, checking only sources marked `fast = true` in the feeds
+`.github/workflows/watch-check.yml` runs on GitHub. **cron-job.org starts it** through the API
+(workflow_dispatch, which begins within seconds), because GitHub's own schedule ran 4 to 11 hours
+late from 2026-11-21 to 2026-11-23. The jobs (times in each job's own time zone):
+- `now`: 6:30 am Pacific, Sunday to Friday, and 1:30 pm Pacific every day
+- `weekend`: 7:00 am Pacific, Saturday
+- `fast`: every 15 minutes from 6:07 am to 4:52 pm Eastern on weekdays
+
+The cron-job.org token is a fine-grained GitHub token for this repo only, with Actions read and
+write; it expires, so renew it before the date in `TODO.md`. GitHub's own schedule stays as a
+backup for the three main runs (14:30 and 21:30 UTC, Saturday 15:17 UTC); a late backup run finds
+nothing new, and a second report in the same slot is named `-2`, never overwriting the first.
+The **fast lane** checks only sources marked `fast = true` in the feeds
 file (BFLY: its press release feed and 8-Ks). Mark only sources that move the price within the day
 and tolerate frequent requests (never Google News). Its reports are named by Pacific time
 (`<TICKER>_<day>_0637.md`) and Claude treats them as `now` runs. All runs share one concurrency
