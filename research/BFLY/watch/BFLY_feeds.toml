@@ -22,7 +22,8 @@
 #   rss: url | google_news: query (searched over the last 7 days)
 #   sec_8k: ticker, items | sec_form_d: company, cik | sec_earnings: tickers
 #   sec_fulltext: queries (exact phrases), forms (EDGAR full-text search; Form D amounts are read)
-#   courtlistener: dockets = [{ id, name }] (API; needs COURTLISTENER_TOKEN, a free account token)
+#   courtlistener: dockets = [{ id, name, slug }] (API; needs COURTLISTENER_TOKEN, a free account
+#     token). slug is the case-name part of the docket's address, which links need.
 #   page: url, and either link_must (regex on the article links' URLs) or headings ("h2", ...),
 #     for a news page with no feed. Its first read is logged as baselined, not sent. If the page
 #     refuses an ordinary request or is built by JavaScript, leave it out; don't get around it
@@ -226,8 +227,8 @@ name = "Court dockets: rulings"
 item = "W3"
 kind = "courtlistener"
 dockets = [
-  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)" },
-  { id = 73698332, name = "EVOX v. Midjourney" },
+  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)", slug = "disney-enterprises-inc-v-midjourney-inc" },
+  { id = 73698332, name = "EVOX v. Midjourney", slug = "evox-productions-llc-v-midjourney-inc" },
 ]
 title_must = '^(?!.*(under seal|pro hac vice|changing the time|scheduling|set/reset|proof of service)).*(#\d+|unnumbered): (\(in chambers\) )?(order|minutes|judgment|notice of settlement|stipulation.*dismiss)'
 match_titles = false
@@ -237,8 +238,8 @@ name = "Court dockets: all filings"
 item = "W3"
 kind = "courtlistener"
 dockets = [
-  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)" },
-  { id = 73698332, name = "EVOX v. Midjourney" },
+  { id = 70513159, name = "Disney v. Midjourney (C.D. Cal. 2:25-cv-05275)", slug = "disney-enterprises-inc-v-midjourney-inc" },
+  { id = 73698332, name = "EVOX v. Midjourney", slug = "evox-productions-llc-v-midjourney-inc" },
 ]
 notify = "weekend"
 match_titles = false

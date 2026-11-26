@@ -329,14 +329,16 @@ DOCKET_PAGE = [
 
 
 def test_docket_entries_carry_the_description_and_a_unique_link():
-    entries = nw.docket_entries(DOCKET_PAGE, 70513159, "Disney v. Midjourney")
+    entries = nw.docket_entries(DOCKET_PAGE, 70513159, "Disney v. Midjourney", "disney-enterprises-inc-v-midjourney-inc")
     assert [e.title for e in entries] == [
         "Disney v. Midjourney #274: NOTICE OF MOTION AND MOTION to Compel Midjourney's Compliance",
         "Disney v. Midjourney unnumbered: Text Only Scheduling Notice",
         "Disney v. Midjourney #35: no description on CourtListener",
     ]
-    assert entries[0].url == "https://www.courtlistener.com/docket/70513159/#entry-274"
-    assert entries[1].url == "https://www.courtlistener.com/docket/70513159/#minute-entry-2"
+    page = "https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/?order_by=desc"
+    assert entries[0].url == f"{page}#entry-274"  # without the slug CourtListener answers 404
+    assert entries[1].url == f"{page}#minute-entry-2"
+    assert nw.normalize_url(entries[0].url).endswith("?order_by=desc#entry-274")  # the seen-log key keeps both
     assert entries[0].published == date(2026, 11, 21)
 
 

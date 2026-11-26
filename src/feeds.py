@@ -163,7 +163,7 @@ def docket_entries(dockets: list[dict], since: date) -> list[Entry]:
                 page = response.json()
             except (requests.RequestException, ValueError) as error:  # ValueError: a bad token or reply
                 raise FeedError(f"{docket['name']}: request failed: {error}") from error
-            found += news_watch.docket_entries(page.get("results", []), docket["id"], docket["name"])
+            found += news_watch.docket_entries(page.get("results", []), docket["id"], docket["name"], docket["slug"])
             url, params = page.get("next"), None
         _docket_cache[key] = found
         entries += found

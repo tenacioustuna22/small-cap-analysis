@@ -108,9 +108,11 @@ def load_config(path: Path) -> Config:
         if missing:
             raise ConfigError(f"{path.name}: source '{name}' is missing {sorted(missing)}")
         if kind == "courtlistener" and not all(
-            isinstance(d, dict) and isinstance(d.get("id"), int) and d.get("name") for d in source["dockets"]
+            isinstance(d, dict) and isinstance(d.get("id"), int) and d.get("name") and d.get("slug")
+            for d in source["dockets"]
         ):
-            raise ConfigError(f"{path.name}: source '{name}' dockets must be {{ id = 123, name = \"...\" }}")
+            raise ConfigError(f"{path.name}: source '{name}' dockets must be "
+                              f"{{ id = 123, name = \"...\", slug = \"case-name-from-the-docket-address\" }}")
         if kind == "page" and ("link_must" in source) == ("headings" in source):
             raise ConfigError(f"{path.name}: source '{name}' needs link_must or headings (one of them)")
         if kind == "page" and source.get("headings", "h2") not in ("h1", "h2", "h3", "h4"):
@@ -259,7 +261,13 @@ def form_d_summary(xml_text: str) -> str:
     )
 
 
-def docket_entries(results: list[dict], docket_id: int, case: str) -> list[Entry]:
+def docket_url(docket_id: int, slug: str) -> str:
+    """The docket page, newest entries first so an #entry anchor lands on the first page.
+    Without the case-name slug CourtListener answers 404."""
+    return f"https://www.courtlistener.com/docket/{docket_id}/{slug}/?order_by=desc"
+
+
+def docket_entries(results: list[dict], docket_id: int, case: str, slug: str) -> list[Entry]:
     """Entries from a CourtListener docket-entries API page. The title carries the court's
     description of the entry, so an order can be told from a routine filing."""
     entries = []
@@ -276,7 +284,7 @@ def docket_entries(results: list[dict], docket_id: int, case: str) -> list[Entry
         anchor = f"entry-{number}" if number is not None else f"minute-entry-{result.get('id')}"
         entries.append(Entry(
             f"{case} {label}: {text}",
-            f"https://www.courtlistener.com/docket/{docket_id}/#{anchor}",
+            f"{docket_url(docket_id, slug)}#{anchor}",
             _parse_date(result.get("date_filed")),
             "courtlistener.com",
         ))
