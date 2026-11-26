@@ -7,11 +7,5 @@
       "window": 60
     }
   },
-  "failures": {
-    "News: Forest Neurotech": {
-      "count": 1,
-      "last_error": "HTTP 429",
-      "since": "2026-11-26"
-    }
-  }
+  "failures": {}
 }
