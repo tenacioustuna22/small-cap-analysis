@@ -164,16 +164,27 @@ in the format at the bottom. Baselines are as of **2026-11-18** unless the item 
       ([Art Newspaper, 2026-07-09](https://www.theartnewspaper.com/2026/07/09/midjourney-demands-hollywood-AI-secrets),
       [Graphic Policy](https://graphicpolicy.com/2025/11/14/court-suggests-disney-v-midjourney-go-to-mediation/);
       unverified).
-    - The Disney docket to 2026-11-21 ([CourtListener](https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/),
-      recorded 2026-11-23):
+    - The Disney docket to 2026-11-25 ([CourtListener](https://www.courtlistener.com/docket/70513159/disney-enterprises-inc-v-midjourney-inc/),
+      recorded 2026-11-23, updated 2026-11-26):
       - Midjourney's motion for judgment on the pleadings (#139, filed 2026-07-21), hearing moved
-        to 2026-11-23, 9:00 am (#267). No ruling yet.
+        to 2026-11-23, 9:00 am (#267). The hearing appears to have gone ahead: transcript order
+        forms followed on 2026-11-23 and 2026-11-24 (#276, #278).
+      - **Entry #282, 2026-11-25:** "Judgment on the Pleadings AND Motion Hearing", most likely the
+        hearing's minutes. Only that label is public: the entry's text and document are on PACER
+        and not yet on CourtListener (checked through its API, 2026-11-26). **Whether the judge
+        ruled, denied the motion or took it under submission is not known.** The entry's text on
+        PACER, or a news report, settles it; a grant or a denial meets W3's "any ruling" test.
+      - What #139 asks: citing the Supreme Court's Cox decision, it targets only the studios'
+        contributory infringement claim; Disney answered that it also pleads inducement, and the
+        direct infringement claims go on either way
+        ([ChatGPT Is Eating the World, 2026-07-22](https://chatgptiseatingtheworld.com/2026/07/22/citing-supreme-courts-decision-in-cox-midjourney-asks-for-judgment-on-the-pleadings-that-disneys-contributory-infringement-claim-fails-as-a-matter-of-law/)
+        and its [case page](https://chatgptiseatingtheworld.com/category/disney-v-midjourney/); unverified).
       - A joint report of mediation was filed on 2026-11-20 (#269). Its contents are not on
         CourtListener.
       - On 2026-11-21 the studios moved to compel Midjourney's compliance with "its prior agreement
         and the Court's orders" regarding the v8 and "torch-aesthetic-redux" source code (#274).
-      - Everything else in the week to 2026-11-21 was routine (sealing, transcripts, proofs of
-        service).
+      - Everything else in the weeks to 2026-11-25 was routine (sealing, transcripts, proofs of
+        service, and text-only scheduling notices on 2026-11-20 and 2026-11-25 with no public text).
     - EVOX v. Midjourney: an initial order setting the Rule 26 scheduling conference (#35,
       2026-11-20). No trial date.
 - **Significant:**
