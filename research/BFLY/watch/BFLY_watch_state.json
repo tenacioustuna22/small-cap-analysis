@@ -7,5 +7,11 @@
       "window": 60
     }
   },
-  "failures": {}
+  "failures": {
+    "EDGAR: Form D naming a partner": {
+      "count": 1,
+      "last_error": "Sonic Incytes: SEC returned HTTP 500 for https://efts.sec.gov/LATEST/search-index?q=%22Sonic+Incytes%22&forms=D&dateRange=custom&startdt=2026-11-18&enddt=2026-11-27",
+      "since": "2026-11-27"
+    }
+  }
 }
