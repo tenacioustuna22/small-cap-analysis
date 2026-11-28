@@ -1,9 +1,9 @@
 {
   "correlation": {
     "BFLY vs ARKK correlation": {
-      "from": "2026-08-28",
-      "to": "2026-11-20",
-      "value": 0.63,
+      "from": "2026-09-03",
+      "to": "2026-11-27",
+      "value": 0.68,
       "window": 60
     }
   },
